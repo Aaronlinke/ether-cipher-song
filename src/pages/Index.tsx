@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { HashVisualizer } from '@/components/HashVisualizer';
 import { Base58Converter } from '@/components/Base58Converter';
@@ -8,69 +9,85 @@ import { WifConverter } from '@/components/WifConverter';
 import { BruteForceCalculator } from '@/components/BruteForceCalculator';
 import { AddressGenerator } from '@/components/AddressGenerator';
 import { Bip39Generator } from '@/components/Bip39Generator';
+import { TimeMachine } from '@/components/TimeMachine';
+import { Button } from '@/components/ui/button';
+import { Clock, Binary } from 'lucide-react';
 
 const Index = () => {
+  const [activeView, setActiveView] = useState<'crypto' | 'timemachine'>('crypto');
+
   return (
     <div className="min-h-screen relative">
-      {/* Background Effect */}
       <MatrixRain />
 
-      {/* Content */}
       <div className="relative z-10">
         <Header />
 
         <main className="container mx-auto px-4 py-8">
-          {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-5xl text-foreground mb-4 tracking-wide">
-              Visualize <span className="text-crypto-gold gold-glow">Cryptography</span>
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Interaktive Tools zum Verstehen von kryptografischen Algorithmen, 
-              Hash-Funktionen und Kodierungssystemen.
-            </p>
+          {/* View Toggle */}
+          <div className="flex justify-center gap-4 mb-8">
+            <Button
+              onClick={() => setActiveView('crypto')}
+              variant={activeView === 'crypto' ? 'default' : 'outline'}
+              className={activeView === 'crypto' 
+                ? 'bg-crypto-gold/20 text-crypto-gold border border-crypto-gold/50' 
+                : 'border-border/30 hover:bg-muted/20'}
+            >
+              <Binary className="w-4 h-4 mr-2" />
+              Kryptografie
+            </Button>
+            <Button
+              onClick={() => setActiveView('timemachine')}
+              variant={activeView === 'timemachine' ? 'default' : 'outline'}
+              className={activeView === 'timemachine' 
+                ? 'bg-crypto-purple/20 text-crypto-purple border border-crypto-purple/50' 
+                : 'border-border/30 hover:bg-muted/20'}
+            >
+              <Clock className="w-4 h-4 mr-2" />
+              Zeitmaschine
+            </Button>
           </div>
 
-          {/* Algorithm Flow - Full Width */}
-          <div className="mb-8">
-            <AlgorithmFlow />
-          </div>
+          {activeView === 'timemachine' ? (
+            <TimeMachine />
+          ) : (
+            <>
+              {/* Hero Section */}
+              <div className="text-center mb-12">
+                <h2 className="font-display text-3xl md:text-5xl text-foreground mb-4 tracking-wide">
+                  Visualize <span className="text-crypto-gold gold-glow">Cryptography</span>
+                </h2>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Interaktive Tools zum Verstehen von kryptografischen Algorithmen, 
+                  Hash-Funktionen und Kodierungssystemen.
+                </p>
+              </div>
 
-          {/* Address Generator - Full Width */}
-          <div className="mb-8">
-            <AddressGenerator />
-          </div>
+              <div className="mb-8"><AlgorithmFlow /></div>
+              <div className="mb-8"><AddressGenerator /></div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <HashVisualizer />
+                <Base58Converter />
+                <EntropyMeter />
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <WifConverter />
+                <BruteForceCalculator />
+              </div>
+              <div className="mb-8"><Bip39Generator /></div>
 
-          {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <HashVisualizer />
-            <Base58Converter />
-            <EntropyMeter />
-          </div>
-
-          {/* Second Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <WifConverter />
-            <BruteForceCalculator />
-          </div>
-
-          {/* BIP39 Generator - Full Width */}
-          <div className="mb-8">
-            <Bip39Generator />
-          </div>
-
-          {/* Info Section */}
-          <div className="mt-12 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-gold/20 bg-card/50 backdrop-blur-sm">
-              <div className="w-2 h-2 rounded-full bg-crypto-green animate-pulse" />
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                Alle Berechnungen laufen lokal in Ihrem Browser
-              </span>
-            </div>
-          </div>
+              <div className="mt-12 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-gold/20 bg-card/50 backdrop-blur-sm">
+                  <div className="w-2 h-2 rounded-full bg-crypto-green animate-pulse" />
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">
+                    Alle Berechnungen laufen lokal in Ihrem Browser
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
         </main>
 
-        {/* Footer */}
         <footer className="border-t border-border/20 mt-16 py-6">
           <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
             <p>Mathematik • Kryptografie • Bildung</p>
