@@ -1,11 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingDown, Play, RotateCcw, Clock, ArrowLeft } from 'lucide-react';
+import { TrendingDown, Play, RotateCcw, Clock, ArrowLeft, Edit3, AlertCircle, CheckCircle } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
+import * as math from 'mathjs';
 
 // ==================== DGL-TYPEN ====================
 
@@ -73,8 +75,89 @@ const ODE_PRESETS: Record<string, ODEPreset> = {
     dimension: 2,
     defaultY0: [2, 0],
     formula: "y'' - 1.5(1-y²)y' + y = 0"
+  },
+  custom: {
+    name: '✨ Eigene Formel',
+    description: 'Definiere deine eigene DGL mit mathjs-Syntax',
+    f: () => [0], // wird überschrieben
+    dimension: 1,
+    defaultY0: [1],
+    formula: 'Benutzerdefiniert'
   }
 };
+
+// ==================== CUSTOM FORMULA PARSER ====================
+
+interface CustomFormulaResult {
+  f: (t: number, y: number[]) => number[];
+  dimension: number;
+  error: string | null;
+}
+
+function parseCustomFormula(formulas: string[]): CustomFormulaResult {
+  const dimension = formulas.length;
+  
+  try {
+    // Compile alle Formeln
+    const compiled = formulas.map((formula, idx) => {
+      if (!formula.trim()) {
+        throw new Error(`Formel ${idx + 1} ist leer`);
+      }
+      return math.compile(formula);
+    });
+    
+    // Test-Evaluation
+    const testScope = {
+      t: 0,
+      y0: 1, y1: 0, y2: 0, y3: 0,
+      y: [1, 0, 0, 0],
+      sin: Math.sin, cos: Math.cos, exp: Math.exp,
+      sqrt: Math.sqrt, abs: Math.abs, log: Math.log,
+      pi: Math.PI, e: Math.E
+    };
+    
+    compiled.forEach((c, idx) => {
+      const result = c.evaluate(testScope);
+      if (typeof result !== 'number' || !isFinite(result)) {
+        throw new Error(`Formel ${idx + 1} ergibt keinen gültigen Wert`);
+      }
+    });
+    
+    // Erstelle Funktion
+    const f = (t: number, y: number[]): number[] => {
+      const scope: Record<string, any> = {
+        t,
+        y0: y[0] ?? 0,
+        y1: y[1] ?? 0,
+        y2: y[2] ?? 0,
+        y3: y[3] ?? 0,
+        y,
+        sin: Math.sin, cos: Math.cos, exp: Math.exp,
+        sqrt: Math.sqrt, abs: Math.abs, log: Math.log,
+        pow: Math.pow, tan: Math.tan, atan: Math.atan,
+        pi: Math.PI, e: Math.E
+      };
+      
+      return compiled.map(c => {
+        try {
+          const result = c.evaluate(scope);
+          return isFinite(result) ? result : 0;
+        } catch {
+          return 0;
+        }
+      });
+    };
+    
+    return { f, dimension, error: null };
+    
+  } catch (err) {
+    return {
+      f: () => Array(dimension).fill(0),
+      dimension,
+      error: err instanceof Error ? err.message : 'Unbekannter Fehler'
+    };
+  }
+}
 
 // ==================== RUNGE-KUTTA 4 (Rückwärts & Vorwärts) ====================
 
@@ -142,12 +225,67 @@ export function DifferentialEquationSolver() {
     initialFromBackward: number[];
   } | null>(null);
   
+  // Custom formula state
+  const [customFormulas, setCustomFormulas] = useState<string[]>(['-0.5 * y0']);
+  const [customDimension, setCustomDimension] = useState(1);
+  const [formulaError, setFormulaError] = useState<string | null>(null);
+  
   const preset = ODE_PRESETS[selectedPreset];
+  const isCustom = selectedPreset === 'custom';
+  
+  // Parse custom formula
+  const customResult = useMemo(() => {
+    if (!isCustom) return null;
+    return parseCustomFormula(customFormulas);
+  }, [isCustom, customFormulas]);
+  
+  // Get effective function and dimension
+  const getEffectiveF = useCallback((): ((t: number, y: number[]) => number[]) => {
+    if (isCustom && customResult && !customResult.error) {
+      return customResult.f;
+    }
+    return preset.f;
+  }, [isCustom, customResult, preset]);
+  
+  const getEffectiveDimension = useCallback((): number => {
+    if (isCustom) return customDimension;
+    return preset.dimension;
+  }, [isCustom, customDimension, preset]);
   
   const handlePresetChange = (value: string) => {
     setSelectedPreset(value);
     const newPreset = ODE_PRESETS[value];
-    setY0Input(newPreset.defaultY0.join(', '));
+    if (value === 'custom') {
+      setY0Input(Array(customDimension).fill(1).join(', '));
+    } else {
+      setY0Input(newPreset.defaultY0.join(', '));
+    }
+    setResult(null);
+    setFormulaError(null);
+  };
+  
+  const handleDimensionChange = (newDim: number) => {
+    const clampedDim = Math.max(1, Math.min(4, newDim));
+    setCustomDimension(clampedDim);
+    
+    // Adjust formulas array
+    const newFormulas = [...customFormulas];
+    while (newFormulas.length < clampedDim) {
+      newFormulas.push('0');
+    }
+    while (newFormulas.length > clampedDim) {
+      newFormulas.pop();
+    }
+    setCustomFormulas(newFormulas);
+    setY0Input(Array(clampedDim).fill(1).join(', '));
+    setResult(null);
+  };
+  
+  const handleFormulaChange = (index: number, value: string) => {
+    const newFormulas = [...customFormulas];
+    newFormulas[index] = value;
+    setCustomFormulas(newFormulas);
+    setFormulaError(null);
     setResult(null);
   };
   
@@ -157,18 +295,29 @@ export function DifferentialEquationSolver() {
   
   const solve = () => {
     const y0 = parseY0();
-    if (y0.length !== preset.dimension) {
+    const effectiveDim = getEffectiveDimension();
+    
+    if (y0.length !== effectiveDim) {
+      setFormulaError(`Anfangswerte müssen ${effectiveDim} Komponenten haben`);
       return;
     }
     
+    if (isCustom && customResult?.error) {
+      setFormulaError(customResult.error);
+      return;
+    }
+    
+    const f = getEffectiveF();
+    setFormulaError(null);
+    
     // Vorwärts lösen: von t=0 zu t=endTime
-    const forward = solveDGL(preset.f, y0, [0, endTime], 500, false);
+    const forward = solveDGL(f, y0, [0, endTime], 500, false);
     
     // Endzustand holen
     const yEnd = forward[forward.length - 1].y;
     
     // Rückwärts lösen: von t=endTime zurück zu t=0
-    const backward = solveDGL(preset.f, yEnd, [0, endTime], 500, true);
+    const backward = solveDGL(f, yEnd, [0, endTime], 500, true);
     
     // Anfangszustand aus Rückwärtsrechnung
     const initialFromBackward = backward[0].y;
@@ -178,7 +327,11 @@ export function DifferentialEquationSolver() {
   
   const reset = () => {
     setResult(null);
-    setY0Input(preset.defaultY0.join(', '));
+    if (isCustom) {
+      setY0Input(Array(customDimension).fill(1).join(', '));
+    } else {
+      setY0Input(preset.defaultY0.join(', '));
+    }
   };
   
   // Chart-Daten vorbereiten
@@ -224,8 +377,10 @@ export function DifferentialEquationSolver() {
     return { maxError, relError };
   }, [result, y0Input]);
   
-  const colors = ['hsl(var(--crypto-purple))', 'hsl(var(--crypto-blue))', 'hsl(142, 76%, 36%)'];
-  const backwardColors = ['hsl(45, 93%, 47%)', 'hsl(0, 84%, 60%)', 'hsl(300, 76%, 50%)'];
+  const colors = ['hsl(var(--crypto-purple))', 'hsl(var(--crypto-blue))', 'hsl(142, 76%, 36%)', 'hsl(280, 70%, 50%)'];
+  const backwardColors = ['hsl(45, 93%, 47%)', 'hsl(0, 84%, 60%)', 'hsl(300, 76%, 50%)', 'hsl(180, 70%, 50%)'];
+  
+  const effectiveDimension = getEffectiveDimension();
   
   return (
     <Card className="border-crypto-purple/30 bg-card/80 backdrop-blur-sm">
@@ -254,22 +409,109 @@ export function DifferentialEquationSolver() {
               ))}
             </SelectContent>
           </Select>
-          <div className="p-2 rounded bg-background/30 border border-border/30">
-            <code className="text-xs text-crypto-blue font-mono">{preset.formula}</code>
-            <p className="text-xs text-muted-foreground mt-1">{preset.description}</p>
-          </div>
+          
+          {/* Standard preset info */}
+          {!isCustom && (
+            <div className="p-2 rounded bg-background/30 border border-border/30">
+              <code className="text-xs text-crypto-blue font-mono">{preset.formula}</code>
+              <p className="text-xs text-muted-foreground mt-1">{preset.description}</p>
+            </div>
+          )}
+          
+          {/* Custom formula editor */}
+          {isCustom && (
+            <div className="space-y-3 p-3 rounded-lg bg-background/40 border border-crypto-purple/30">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-crypto-purple" />
+                <span className="text-sm font-medium text-crypto-purple">Eigene DGL definieren</span>
+              </div>
+              
+              {/* Dimension selector */}
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Dimension (1-4)</Label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4].map(dim => (
+                    <Button
+                      key={dim}
+                      size="sm"
+                      variant={customDimension === dim ? "default" : "outline"}
+                      className={customDimension === dim ? "bg-crypto-purple" : "border-border/50"}
+                      onClick={() => handleDimensionChange(dim)}
+                    >
+                      {dim}D
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Formula inputs */}
+              <div className="space-y-2">
+                {customFormulas.map((formula, idx) => (
+                  <div key={idx} className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">
+                      dy{idx}/dt =
+                    </Label>
+                    <Textarea
+                      value={formula}
+                      onChange={(e) => handleFormulaChange(idx, e.target.value)}
+                      placeholder={`z.B. -0.5 * y${idx} oder y${idx}^2 - t`}
+                      className="bg-background/50 border-border/50 font-mono text-sm h-12 resize-none"
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Syntax help */}
+              <div className="p-2 rounded bg-background/30 border border-border/20 text-xs">
+                <p className="text-muted-foreground mb-1 font-semibold">Variablen & Syntax:</p>
+                <div className="grid grid-cols-2 gap-1 text-muted-foreground/80 font-mono">
+                  <span>t - Zeit</span>
+                  <span>y0, y1, y2... - Komponenten</span>
+                  <span>sin, cos, tan, exp, log</span>
+                  <span>sqrt, abs, pow</span>
+                  <span>pi, e</span>
+                  <span>+, -, *, /, ^</span>
+                </div>
+              </div>
+              
+              {/* Validation status */}
+              {customResult && (
+                <div className={`flex items-center gap-2 text-xs ${customResult.error ? 'text-red-400' : 'text-green-400'}`}>
+                  {customResult.error ? (
+                    <>
+                      <AlertCircle className="w-3 h-3" />
+                      <span>{customResult.error}</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-3 h-3" />
+                      <span>Formel ist gültig ({customDimension}D System)</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
+        
+        {/* Error display */}
+        {formulaError && (
+          <div className="p-2 rounded bg-red-500/10 border border-red-500/30 text-xs text-red-400 flex items-center gap-2">
+            <AlertCircle className="w-3 h-3" />
+            {formulaError}
+          </div>
+        )}
         
         {/* Parameter */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">
-              Anfangswerte y(0) ({preset.dimension}D)
+              Anfangswerte y(0) ({effectiveDimension}D)
             </Label>
             <Input
               value={y0Input}
               onChange={(e) => setY0Input(e.target.value)}
-              placeholder="1, 0"
+              placeholder={Array(effectiveDimension).fill('1').join(', ')}
               className="bg-background/50 border-border/50 font-mono text-sm"
             />
           </div>
@@ -289,6 +531,7 @@ export function DifferentialEquationSolver() {
           <Button
             onClick={solve}
             className="flex-1 bg-crypto-purple hover:bg-crypto-purple/80"
+            disabled={isCustom && !!customResult?.error}
           >
             <Play className="w-4 h-4 mr-2" />
             Lösen & Rückrechnen
@@ -377,7 +620,7 @@ export function DifferentialEquationSolver() {
                   <ReferenceLine x="0" stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" />
                   
                   {/* Vorwärts-Linien */}
-                  {Array.from({ length: preset.dimension }).map((_, i) => (
+                  {Array.from({ length: effectiveDimension }).map((_, i) => (
                     <Line
                       key={`fwd_${i}`}
                       type="monotone"
@@ -390,7 +633,7 @@ export function DifferentialEquationSolver() {
                   ))}
                   
                   {/* Rückwärts-Linien */}
-                  {Array.from({ length: preset.dimension }).map((_, i) => (
+                  {Array.from({ length: effectiveDimension }).map((_, i) => (
                     <Line
                       key={`bwd_${i}`}
                       type="monotone"
