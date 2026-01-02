@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingDown, Play, RotateCcw, Clock, ArrowLeft, Edit3, AlertCircle, CheckCircle } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
+import { TrendingDown, Play, RotateCcw, Clock, ArrowLeft, Edit3, AlertCircle, CheckCircle, Orbit } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine, ScatterChart, Scatter, ZAxis } from 'recharts';
 import * as math from 'mathjs';
 
 // ==================== DGL-TYPEN ====================
@@ -382,6 +382,26 @@ export function DifferentialEquationSolver() {
   
   const effectiveDimension = getEffectiveDimension();
   
+  // Phasenraum-Daten für 2D+ Systeme (y0 vs y1)
+  const phaseSpaceData = useMemo(() => {
+    if (!result || effectiveDimension < 2) return null;
+    
+    const forwardPhase: { y0: number; y1: number; index: number }[] = [];
+    const backwardPhase: { y0: number; y1: number; index: number }[] = [];
+    
+    const step = Math.max(1, Math.floor(result.forward.length / 300));
+    
+    for (let i = 0; i < result.forward.length; i += step) {
+      const fwd = result.forward[i];
+      const bwd = result.backward[i] || result.backward[result.backward.length - 1];
+      
+      forwardPhase.push({ y0: fwd.y[0], y1: fwd.y[1], index: i });
+      backwardPhase.push({ y0: bwd.y[0], y1: bwd.y[1], index: i });
+    }
+    
+    return { forwardPhase, backwardPhase };
+  }, [result, effectiveDimension]);
+  
   return (
     <Card className="border-crypto-purple/30 bg-card/80 backdrop-blur-sm">
       <CardHeader className="pb-3">
@@ -649,7 +669,7 @@ export function DifferentialEquationSolver() {
               </ResponsiveContainer>
             </div>
             
-            {/* Legende */}
+            {/* Legende Zeit-Plot */}
             <div className="flex justify-center gap-4 text-xs">
               <span className="flex items-center gap-1">
                 <span className="w-4 h-0.5 bg-crypto-purple"></span>
@@ -660,6 +680,116 @@ export function DifferentialEquationSolver() {
                 Rückwärts (t: T→0)
               </span>
             </div>
+            
+            {/* Phasenraum-Plot für 2D+ Systeme */}
+            {phaseSpaceData && (
+              <div className="space-y-3 mt-4">
+                <div className="p-3 rounded-lg bg-background/40 border border-crypto-blue/20">
+                  <h4 className="text-sm font-semibold text-crypto-blue flex items-center gap-2 mb-2">
+                    <Orbit className="w-4 h-4" />
+                    Phasenraum (y₀ vs y₁)
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Spiralen, Grenzzyklen und chaotische Attraktoren visualisiert
+                  </p>
+                </div>
+                
+                <div className="h-72 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                      <XAxis 
+                        type="number"
+                        dataKey="y0" 
+                        name="y₀"
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={10}
+                        tickFormatter={(v) => v.toFixed(1)}
+                        label={{ value: 'y₀', position: 'bottom', fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                      />
+                      <YAxis 
+                        type="number"
+                        dataKey="y1"
+                        name="y₁"
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={10}
+                        tickFormatter={(v) => v.toFixed(1)}
+                        label={{ value: 'y₁', angle: -90, position: 'left', fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                      />
+                      <ZAxis type="number" dataKey="index" range={[10, 50]} />
+                      <Tooltip 
+                        cursor={{ strokeDasharray: '3 3' }}
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          fontSize: '11px'
+                        }}
+                        formatter={(value: number) => value.toFixed(4)}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '10px' }} />
+                      
+                      {/* Vorwärts-Trajektorie */}
+                      <Scatter
+                        name="Vorwärts →"
+                        data={phaseSpaceData.forwardPhase}
+                        fill="hsl(var(--crypto-purple))"
+                        line={{ stroke: 'hsl(var(--crypto-purple))', strokeWidth: 1.5 }}
+                        shape="circle"
+                      />
+                      
+                      {/* Rückwärts-Trajektorie */}
+                      <Scatter
+                        name="Rückwärts ←"
+                        data={phaseSpaceData.backwardPhase}
+                        fill="hsl(var(--crypto-gold))"
+                        line={{ stroke: 'hsl(var(--crypto-gold))', strokeWidth: 1.5, strokeDasharray: '5 5' }}
+                        shape="diamond"
+                      />
+                      
+                      {/* Startpunkt markieren */}
+                      <Scatter
+                        name="Start y(0)"
+                        data={[phaseSpaceData.forwardPhase[0]]}
+                        fill="hsl(142, 76%, 36%)"
+                        shape="star"
+                      />
+                      
+                      {/* Endpunkt markieren */}
+                      <Scatter
+                        name="Ende y(T)"
+                        data={[phaseSpaceData.forwardPhase[phaseSpaceData.forwardPhase.length - 1]]}
+                        fill="hsl(0, 84%, 60%)"
+                        shape="cross"
+                      />
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                </div>
+                
+                {/* Phasenraum-Info */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2 rounded bg-green-500/10 border border-green-500/30 flex items-center gap-2">
+                    <span className="text-green-400">★</span>
+                    <span className="text-green-400">Startpunkt y(0)</span>
+                  </div>
+                  <div className="p-2 rounded bg-red-500/10 border border-red-500/30 flex items-center gap-2">
+                    <span className="text-red-400">✕</span>
+                    <span className="text-red-400">Endpunkt y(T)</span>
+                  </div>
+                </div>
+                
+                {/* Typische Muster */}
+                <div className="p-3 rounded-lg bg-background/30 border border-border/20">
+                  <h4 className="text-xs font-semibold text-muted-foreground mb-2">Typische Phasenraum-Muster</h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground/80">
+                    <div><span className="text-crypto-purple">●</span> Ellipse/Kreis = Harmonischer Oszillator</div>
+                    <div><span className="text-crypto-blue">●</span> Spirale nach innen = Gedämpft</div>
+                    <div><span className="text-crypto-gold">●</span> Geschlossene Kurve = Grenzzyklus</div>
+                    <div><span className="text-red-400">●</span> Chaotisch = Seltsamer Attraktor</div>
+                  </div>
+                </div>
+              </div>
+            )}
             
             {/* Formeln */}
             <div className="p-3 rounded-lg bg-background/30 border border-border/20">
