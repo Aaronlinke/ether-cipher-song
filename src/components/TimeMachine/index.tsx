@@ -6,6 +6,7 @@ import { AlgorithmBackward } from './AlgorithmBackward';
 import { CosmologyCalculator } from './CosmologyCalculator';
 import { InverseMath } from './InverseMath';
 import { DifferentialEquationSolver } from './DifferentialEquationSolver';
+import { QuantumModule } from './QuantumModule';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -68,6 +69,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
       {/* DGL Solver - Full Width */}
       <DifferentialEquationSolver />
 
+      {/* Quantum Module - Full Width */}
+      <QuantumModule />
+
       {/* Footer Info */}
       <div className="text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
@@ -86,3 +90,4 @@ export { AlgorithmBackward } from './AlgorithmBackward';
 export { CosmologyCalculator } from './CosmologyCalculator';
 export { InverseMath } from './InverseMath';
 export { DifferentialEquationSolver } from './DifferentialEquationSolver';
+export { QuantumModule } from './QuantumModule';
