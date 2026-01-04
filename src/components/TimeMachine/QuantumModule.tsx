@@ -1,13 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Atom, Play, RotateCcw, Clock, ArrowLeft, Waves, Circle } from 'lucide-react';
+import { Atom, Play, RotateCcw, Clock, ArrowLeft, Waves, Circle, Box } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ScatterChart, Scatter, ZAxis } from 'recharts';
 import * as math from 'mathjs';
+
+// Lazy load 3D Bloch sphere
+const BlochSphere3D = lazy(() => import('./BlochSphere3D').then(m => ({ default: m.BlochSphere3D })));
 
 // ==================== QUANTENZUSTANDS-TYPEN ====================
 
@@ -656,6 +659,43 @@ export function QuantumModule() {
                       />
                     </ScatterChart>
                   </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+            
+            {/* 3D Bloch-Kugel */}
+            {blochData && preset.state.dimension === 2 && (
+              <div className="space-y-3">
+                <div className="p-3 rounded-lg bg-background/40 border border-crypto-gold/20">
+                  <h4 className="text-sm font-semibold text-crypto-gold flex items-center gap-2 mb-2">
+                    <Box className="w-4 h-4" />
+                    3D Bloch-Kugel
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Interaktive Visualisierung des Qubit-Zustands auf der Bloch-Kugel
+                  </p>
+                </div>
+                
+                <Suspense fallback={
+                  <div className="w-full h-72 rounded-lg border border-border/30 bg-background/50 flex items-center justify-center">
+                    <div className="text-muted-foreground text-sm flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-crypto-purple border-t-transparent rounded-full animate-spin" />
+                      Bloch-Kugel wird geladen...
+                    </div>
+                  </div>
+                }>
+                  <BlochSphere3D
+                    x={blochData.forwardBloch[blochData.forwardBloch.length - 1]?.x || 0}
+                    y={blochData.forwardBloch[blochData.forwardBloch.length - 1]?.y || 0}
+                    z={blochData.forwardBloch[blochData.forwardBloch.length - 1]?.z || 0}
+                    trajectory={blochData.forwardBloch}
+                    showLabels={true}
+                  />
+                </Suspense>
+                
+                <div className="p-2 rounded bg-background/30 border border-border/20 text-xs text-muted-foreground">
+                  <p><strong>Bloch-Kugel:</strong> Jeder Punkt auf der Oberfläche entspricht einem reinen Qubit-Zustand.</p>
+                  <p className="mt-1">|0⟩ = Nordpol (z=1), |1⟩ = Südpol (z=-1), |±⟩ und |±i⟩ auf dem Äquator</p>
                 </div>
               </div>
             )}

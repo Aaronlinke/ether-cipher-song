@@ -7,6 +7,8 @@ import { CosmologyCalculator } from './CosmologyCalculator';
 import { InverseMath } from './InverseMath';
 import { DifferentialEquationSolver } from './DifferentialEquationSolver';
 import { QuantumModule } from './QuantumModule';
+import { SEIRSimulator } from './SEIRSimulator';
+import { MirrorMode } from './MirrorMode';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -42,7 +44,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
             Mathematische Zeitmaschine
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            Universeller Rückwärtsrechner v2.0 • Inverse Berechnungen • Kosmologie
+            Universeller Rückwärtsrechner v3.0 • Inverse Berechnungen • Quanten • Epidemiologie
           </p>
         </div>
         <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
@@ -54,23 +56,37 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
       {/* Personal Signature - Full Width */}
       <PersonalSignature onSignatureChange={handleSignatureChange} />
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AlgorithmBackward />
-        <CosmologyCalculator 
-          personalSignature={signature || undefined} 
-          userName={userName}
-        />
-      </div>
+      {/* Spiegel-Modus Wrapper */}
+      <MirrorMode>
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AlgorithmBackward />
+          <CosmologyCalculator 
+            personalSignature={signature || undefined} 
+            userName={userName}
+          />
+        </div>
 
-      {/* Inverse Math - Full Width */}
-      <InverseMath />
+        {/* Inverse Math - Full Width */}
+        <div className="mt-6">
+          <InverseMath />
+        </div>
 
-      {/* DGL Solver - Full Width */}
-      <DifferentialEquationSolver />
+        {/* DGL Solver - Full Width */}
+        <div className="mt-6">
+          <DifferentialEquationSolver />
+        </div>
 
-      {/* Quantum Module - Full Width */}
-      <QuantumModule />
+        {/* SEIR Epidemie-Simulator - Full Width */}
+        <div className="mt-6">
+          <SEIRSimulator />
+        </div>
+
+        {/* Quantum Module - Full Width */}
+        <div className="mt-6">
+          <QuantumModule />
+        </div>
+      </MirrorMode>
 
       {/* Footer Info */}
       <div className="text-center">
@@ -91,3 +107,5 @@ export { CosmologyCalculator } from './CosmologyCalculator';
 export { InverseMath } from './InverseMath';
 export { DifferentialEquationSolver } from './DifferentialEquationSolver';
 export { QuantumModule } from './QuantumModule';
+export { SEIRSimulator } from './SEIRSimulator';
+export { MirrorMode } from './MirrorMode';
