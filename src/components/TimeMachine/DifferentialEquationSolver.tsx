@@ -1,13 +1,16 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, Suspense, lazy } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingDown, Play, RotateCcw, Clock, ArrowLeft, Edit3, AlertCircle, CheckCircle, Orbit } from 'lucide-react';
+import { TrendingDown, Play, RotateCcw, Clock, ArrowLeft, Edit3, AlertCircle, CheckCircle, Orbit, Box } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine, ScatterChart, Scatter, ZAxis } from 'recharts';
 import * as math from 'mathjs';
+
+// Lazy load 3D viewer for performance
+const Lorenz3DViewer = lazy(() => import('./Lorenz3DViewer').then(m => ({ default: m.Lorenz3DViewer })));
 
 // ==================== DGL-TYPEN ====================
 
@@ -75,6 +78,96 @@ const ODE_PRESETS: Record<string, ODEPreset> = {
     dimension: 2,
     defaultY0: [2, 0],
     formula: "y'' - 1.5(1-y²)y' + y = 0"
+  },
+  // ==================== NEUE TEMPLATES ====================
+  lotka_volterra: {
+    name: 'Lotka-Volterra (Räuber-Beute)',
+    description: 'Klassisches Räuber-Beute-Modell',
+    f: (t, y) => {
+      const alpha = 1.1, beta = 0.4, gamma = 0.4, delta = 0.1;
+      // x = Beute, y = Räuber
+      return [
+        alpha * y[0] - beta * y[0] * y[1],   // dx/dt = αx - βxy
+        delta * y[0] * y[1] - gamma * y[1]    // dy/dt = δxy - γy
+      ];
+    },
+    dimension: 2,
+    defaultY0: [10, 5],
+    formula: 'dx/dt = αx - βxy, dy/dt = δxy - γy (α=1.1, β=0.4, γ=0.4, δ=0.1)'
+  },
+  sir_epidemic: {
+    name: 'SIR-Epidemie-Modell',
+    description: 'Susceptible-Infected-Recovered Epidemie',
+    f: (t, y) => {
+      const beta = 0.3, gamma = 0.1;  // Infektions- und Genesungsrate
+      const N = y[0] + y[1] + y[2];   // Gesamtpopulation
+      return [
+        -beta * y[0] * y[1] / N,           // dS/dt = -βSI/N
+        beta * y[0] * y[1] / N - gamma * y[1],  // dI/dt = βSI/N - γI
+        gamma * y[1]                        // dR/dt = γI
+      ];
+    },
+    dimension: 3,
+    defaultY0: [990, 10, 0],  // 990 anfällig, 10 infiziert, 0 genesen
+    formula: 'dS/dt = -βSI/N, dI/dt = βSI/N - γI, dR/dt = γI (β=0.3, γ=0.1)'
+  },
+  double_pendulum: {
+    name: 'Doppelpendel (Chaos)',
+    description: 'Chaotisches Doppelpendel (vereinfacht)',
+    f: (t, y) => {
+      // y = [θ₁, ω₁, θ₂, ω₂] (Winkel und Winkelgeschwindigkeiten)
+      const g = 9.81, L1 = 1, L2 = 1, m1 = 1, m2 = 1;
+      const [theta1, omega1, theta2, omega2] = y;
+      const delta = theta1 - theta2;
+      const den1 = (m1 + m2) * L1 - m2 * L1 * Math.cos(delta) * Math.cos(delta);
+      const den2 = (L2 / L1) * den1;
+      
+      const dtheta1 = omega1;
+      const dtheta2 = omega2;
+      
+      const domega1 = (m2 * L1 * omega1 * omega1 * Math.sin(delta) * Math.cos(delta)
+                    + m2 * g * Math.sin(theta2) * Math.cos(delta)
+                    + m2 * L2 * omega2 * omega2 * Math.sin(delta)
+                    - (m1 + m2) * g * Math.sin(theta1)) / den1;
+      
+      const domega2 = (-m2 * L2 * omega2 * omega2 * Math.sin(delta) * Math.cos(delta)
+                    + (m1 + m2) * g * Math.sin(theta1) * Math.cos(delta)
+                    - (m1 + m2) * L1 * omega1 * omega1 * Math.sin(delta)
+                    - (m1 + m2) * g * Math.sin(theta2)) / den2;
+      
+      return [dtheta1, domega1, dtheta2, domega2];
+    },
+    dimension: 4,
+    defaultY0: [Math.PI / 2, 0, Math.PI / 4, 0],  // θ₁=90°, θ₂=45°, keine Anfangsgeschwindigkeit
+    formula: "θ₁'' = f(θ₁,θ₂,ω₁,ω₂), θ₂'' = g(θ₁,θ₂,ω₁,ω₂) (Lagrange)"
+  },
+  brusselator: {
+    name: 'Brüsselator (Chemie)',
+    description: 'Chemisches Oszillationsmodell',
+    f: (t, y) => {
+      const A = 1, B = 3;
+      return [
+        A + y[0] * y[0] * y[1] - (B + 1) * y[0],
+        B * y[0] - y[0] * y[0] * y[1]
+      ];
+    },
+    dimension: 2,
+    defaultY0: [1, 1],
+    formula: 'dx/dt = A + x²y - (B+1)x, dy/dt = Bx - x²y (A=1, B=3)'
+  },
+  fitzhugh_nagumo: {
+    name: 'FitzHugh-Nagumo (Neuron)',
+    description: 'Vereinfachtes Neuronenmodell',
+    f: (t, y) => {
+      const a = 0.7, b = 0.8, tau = 12.5, I = 0.5;
+      return [
+        y[0] - y[0] * y[0] * y[0] / 3 - y[1] + I,
+        (y[0] + a - b * y[1]) / tau
+      ];
+    },
+    dimension: 2,
+    defaultY0: [0, 0],
+    formula: 'dv/dt = v - v³/3 - w + I, dw/dt = (v + a - bw)/τ'
   },
   custom: {
     name: '✨ Eigene Formel',
@@ -787,6 +880,42 @@ export function DifferentialEquationSolver() {
                     <div><span className="text-crypto-gold">●</span> Geschlossene Kurve = Grenzzyklus</div>
                     <div><span className="text-red-400">●</span> Chaotisch = Seltsamer Attraktor</div>
                   </div>
+                </div>
+              </div>
+            )}
+            
+            {/* 3D Lorenz Attraktor Visualisierung */}
+            {selectedPreset === 'lorenz' && result && effectiveDimension === 3 && (
+              <div className="space-y-3 mt-4">
+                <div className="p-3 rounded-lg bg-background/40 border border-crypto-gold/20">
+                  <h4 className="text-sm font-semibold text-crypto-gold flex items-center gap-2 mb-2">
+                    <Box className="w-4 h-4" />
+                    3D Lorenz-Attraktor
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Interaktive 3D-Visualisierung des chaotischen Systems (Maus zum Drehen verwenden)
+                  </p>
+                </div>
+                
+                <div className="relative">
+                  <Suspense fallback={
+                    <div className="w-full h-80 rounded-lg border border-border/30 bg-background/50 flex items-center justify-center">
+                      <div className="text-muted-foreground text-sm flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-crypto-purple border-t-transparent rounded-full animate-spin" />
+                        3D-Szene wird geladen...
+                      </div>
+                    </div>
+                  }>
+                    <Lorenz3DViewer
+                      forwardTrajectory={result.forward}
+                      backwardTrajectory={result.backward}
+                    />
+                  </Suspense>
+                </div>
+                
+                <div className="p-2 rounded bg-background/30 border border-border/20 text-xs text-muted-foreground">
+                  <p><strong>Lorenz-Parameter:</strong> σ=10, ρ=28, β=8/3 (klassische chaotische Werte)</p>
+                  <p className="mt-1">Der Attraktor zeigt die charakteristische "Schmetterlings"-Form des deterministischen Chaos.</p>
                 </div>
               </div>
             )}
