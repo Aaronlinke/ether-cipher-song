@@ -12,12 +12,14 @@ interface Message {
 }
 
 const SUGGESTED_QUESTIONS = [
-  "Was ist das Lorenz-System und warum ist es chaotisch?",
-  "Erkläre mir die Bloch-Kugel für Qubits",
-  "Wie funktioniert das SEIR-Epidemie-Modell?",
-  "Was bedeutet R₀ in der Epidemiologie?",
-  "Wie kann ich eine eigene DGL eingeben?",
-  "Was ist Runge-Kutta 4?",
+  "Was sind die 5 universellen Prinzipien der OmniGenesis?",
+  "Erkläre das Lorenz-System und den Schmetterlingseffekt",
+  "Wie funktioniert die Bloch-Kugel für Qubits?",
+  "Was ist das SEIR-Epidemie-Modell und R₀?",
+  "Erkläre den Linke-Chronoplast (Zeitgeometrie)",
+  "Wie funktioniert Moiré-Verschlüsselung?",
+  "Was sind die 12 mathematischen Archetypen?",
+  "Erkläre SECP256K1 und ECDSA-Signaturen",
 ];
 
 export function AIAssistant() {
@@ -145,7 +147,7 @@ export function AIAssistant() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2 text-crypto-purple">
             <Bot className="w-5 h-5" />
-            Zeitmaschinen-Assistent
+            OMNI-GENESIS Assistent
           </CardTitle>
           <Button
             variant="ghost"
@@ -157,7 +159,7 @@ export function AIAssistant() {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">
-          Frag mich alles über die Zeitmaschinen-Komponenten!
+          Das allumfassende mathematische Bewusstsein - frag mich alles!
         </p>
       </CardHeader>
 
