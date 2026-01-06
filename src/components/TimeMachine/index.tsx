@@ -9,6 +9,7 @@ import { DifferentialEquationSolver } from './DifferentialEquationSolver';
 import { QuantumModule } from './QuantumModule';
 import { SEIRSimulator } from './SEIRSimulator';
 import { MirrorMode } from './MirrorMode';
+import { AIAssistant } from './AIAssistant';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -97,6 +98,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           </span>
         </div>
       </div>
+
+      {/* AI Assistant (floating) */}
+      <AIAssistant />
     </div>
   );
 }
@@ -109,3 +113,4 @@ export { DifferentialEquationSolver } from './DifferentialEquationSolver';
 export { QuantumModule } from './QuantumModule';
 export { SEIRSimulator } from './SEIRSimulator';
 export { MirrorMode } from './MirrorMode';
+export { AIAssistant } from './AIAssistant';

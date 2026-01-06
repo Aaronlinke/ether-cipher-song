@@ -1,0 +1,4 @@
+project_id = "sywkfawlaufynzjdgdws"
+
+[functions.time-machine-chat]
+verify_jwt = false
