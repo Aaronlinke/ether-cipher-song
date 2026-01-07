@@ -10,6 +10,9 @@ import { QuantumModule } from './QuantumModule';
 import { SEIRSimulator } from './SEIRSimulator';
 import { MirrorMode } from './MirrorMode';
 import { AIAssistant } from './AIAssistant';
+import { QuantumVacuumSimulator } from './QuantumVacuumSimulator';
+import { ECDSACryptoModule } from './ECDSACryptoModule';
+import { BifurcationDiagram } from './BifurcationDiagram';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -42,10 +45,10 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="flex-1">
           <h2 className="font-display text-2xl md:text-3xl text-crypto-purple gold-glow flex items-center gap-3">
             <Clock className="w-8 h-8" />
-            Mathematische Zeitmaschine
+            OMNI-GENESIS Zeitmaschine
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            Universeller Rückwärtsrechner v3.0 • Inverse Berechnungen • Quanten • Epidemiologie
+            Universeller Rückwärtsrechner v4.0 • Quanten-Vakuum • ECDSA • Chaos • Epidemiologie
           </p>
         </div>
         <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
@@ -54,10 +57,10 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         </div>
       </div>
 
-      {/* Personal Signature - Full Width */}
+      {/* Personal Signature */}
       <PersonalSignature onSignatureChange={handleSignatureChange} />
 
-      {/* Spiegel-Modus Wrapper */}
+      {/* Spiegel-Modus Wrapper (Berechnungsrichtung) */}
       <MirrorMode>
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -68,28 +71,39 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           />
         </div>
 
-        {/* Inverse Math - Full Width */}
+        {/* ECDSA Crypto & Bifurkation */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <ECDSACryptoModule />
+          <BifurcationDiagram />
+        </div>
+
+        {/* Inverse Math */}
         <div className="mt-6">
           <InverseMath />
         </div>
 
-        {/* DGL Solver - Full Width */}
+        {/* DGL Solver */}
         <div className="mt-6">
           <DifferentialEquationSolver />
         </div>
 
-        {/* SEIR Epidemie-Simulator - Full Width */}
+        {/* SEIR Epidemie-Simulator */}
         <div className="mt-6">
           <SEIRSimulator />
         </div>
 
-        {/* Quantum Module - Full Width */}
+        {/* Quantum Vacuum Simulator */}
+        <div className="mt-6">
+          <QuantumVacuumSimulator />
+        </div>
+
+        {/* Quantum Module (Bloch Sphere) */}
         <div className="mt-6">
           <QuantumModule />
         </div>
       </MirrorMode>
 
-      {/* Footer Info */}
+      {/* Footer */}
       <div className="text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
@@ -99,7 +113,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         </div>
       </div>
 
-      {/* AI Assistant (floating) */}
+      {/* AI Assistant */}
       <AIAssistant />
     </div>
   );
@@ -114,3 +128,6 @@ export { QuantumModule } from './QuantumModule';
 export { SEIRSimulator } from './SEIRSimulator';
 export { MirrorMode } from './MirrorMode';
 export { AIAssistant } from './AIAssistant';
+export { QuantumVacuumSimulator } from './QuantumVacuumSimulator';
+export { ECDSACryptoModule } from './ECDSACryptoModule';
+export { BifurcationDiagram } from './BifurcationDiagram';
