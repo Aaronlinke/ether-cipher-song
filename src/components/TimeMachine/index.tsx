@@ -13,6 +13,11 @@ import { AIAssistant } from './AIAssistant';
 import { QuantumVacuumSimulator } from './QuantumVacuumSimulator';
 import { ECDSACryptoModule } from './ECDSACryptoModule';
 import { BifurcationDiagram } from './BifurcationDiagram';
+import { UrZahlGenerator } from './UrZahlGenerator';
+import { LinkeChronoplast } from './LinkeChronoplast';
+import { SHA256PaperComputer } from './SHA256PaperComputer';
+import { MoireEncryption } from './MoireEncryption';
+import { OmegaSwarmIntelligence } from './OmegaSwarmIntelligence';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -33,11 +38,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
       {/* Header */}
       <div className="flex items-center gap-4">
         {onBack && (
-          <Button
-            onClick={onBack}
-            variant="ghost"
-            className="text-muted-foreground hover:text-foreground"
-          >
+          <Button onClick={onBack} variant="ghost" className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Zurück
           </Button>
@@ -48,7 +49,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
             OMNI-GENESIS Zeitmaschine
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            Universeller Rückwärtsrechner v4.0 • Quanten-Vakuum • ECDSA • Chaos • Epidemiologie
+            Universeller Rückwärtsrechner v5.0 • Ur-Zahl • Chronoplast • Moiré • Schwarm-KI
           </p>
         </div>
         <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
@@ -57,53 +58,44 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         </div>
       </div>
 
-      {/* Personal Signature */}
       <PersonalSignature onSignatureChange={handleSignatureChange} />
 
-      {/* Spiegel-Modus Wrapper (Berechnungsrichtung) */}
       <MirrorMode>
-        {/* Main Grid */}
+        {/* Ur-Zahl & Chronoplast */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <AlgorithmBackward />
-          <CosmologyCalculator 
-            personalSignature={signature || undefined} 
-            userName={userName}
-          />
+          <UrZahlGenerator />
+          <LinkeChronoplast />
         </div>
 
-        {/* ECDSA Crypto & Bifurkation */}
+        {/* SHA-256 & Moiré */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <SHA256PaperComputer />
+          <MoireEncryption />
+        </div>
+
+        {/* Schwarm-Intelligenz */}
+        <div className="mt-6">
+          <OmegaSwarmIntelligence />
+        </div>
+
+        {/* Core Modules */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <AlgorithmBackward />
+          <CosmologyCalculator personalSignature={signature || undefined} userName={userName} />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           <ECDSACryptoModule />
           <BifurcationDiagram />
         </div>
 
-        {/* Inverse Math */}
-        <div className="mt-6">
-          <InverseMath />
-        </div>
-
-        {/* DGL Solver */}
-        <div className="mt-6">
-          <DifferentialEquationSolver />
-        </div>
-
-        {/* SEIR Epidemie-Simulator */}
-        <div className="mt-6">
-          <SEIRSimulator />
-        </div>
-
-        {/* Quantum Vacuum Simulator */}
-        <div className="mt-6">
-          <QuantumVacuumSimulator />
-        </div>
-
-        {/* Quantum Module (Bloch Sphere) */}
-        <div className="mt-6">
-          <QuantumModule />
-        </div>
+        <div className="mt-6"><InverseMath /></div>
+        <div className="mt-6"><DifferentialEquationSolver /></div>
+        <div className="mt-6"><SEIRSimulator /></div>
+        <div className="mt-6"><QuantumVacuumSimulator /></div>
+        <div className="mt-6"><QuantumModule /></div>
       </MirrorMode>
 
-      {/* Footer */}
       <div className="text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
@@ -113,7 +105,6 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         </div>
       </div>
 
-      {/* AI Assistant */}
       <AIAssistant />
     </div>
   );
@@ -131,3 +122,8 @@ export { AIAssistant } from './AIAssistant';
 export { QuantumVacuumSimulator } from './QuantumVacuumSimulator';
 export { ECDSACryptoModule } from './ECDSACryptoModule';
 export { BifurcationDiagram } from './BifurcationDiagram';
+export { UrZahlGenerator } from './UrZahlGenerator';
+export { LinkeChronoplast } from './LinkeChronoplast';
+export { SHA256PaperComputer } from './SHA256PaperComputer';
+export { MoireEncryption } from './MoireEncryption';
+export { OmegaSwarmIntelligence } from './OmegaSwarmIntelligence';
