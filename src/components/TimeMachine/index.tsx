@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Clock, Atom, ArrowLeft } from 'lucide-react';
+import { Clock, Atom, ArrowLeft, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PersonalSignature } from './PersonalSignature';
 import { AlgorithmBackward } from './AlgorithmBackward';
 import { CosmologyCalculator } from './CosmologyCalculator';
@@ -19,6 +20,7 @@ import { SHA256PaperComputer } from './SHA256PaperComputer';
 import { MoireEncryption } from './MoireEncryption';
 import { OmegaSwarmIntelligence } from './OmegaSwarmIntelligence';
 import { BitcoinPuzzleSolver } from './BitcoinPuzzleSolver';
+import { OmegaChaosDashboard } from './OmegaChaosDashboard';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -28,6 +30,7 @@ interface TimeMachineProps {
 export function TimeMachine({ onBack }: TimeMachineProps) {
   const [signature, setSignature] = useState<SignatureType | null>(null);
   const [userName, setUserName] = useState('Aaron Linke');
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   const handleSignatureChange = (sig: SignatureType, name: string) => {
     setSignature(sig);
@@ -50,7 +53,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
             OMNI-GENESIS Zeitmaschine
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            Universeller Rückwärtsrechner v5.0 • Ur-Zahl • Chronoplast • Moiré • Schwarm-KI
+            Universeller Rückwärtsrechner v6.0 • OMEGA CHAOS COMMAND
           </p>
         </div>
         <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground">
@@ -59,55 +62,89 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         </div>
       </div>
 
-      <PersonalSignature onSignatureChange={handleSignatureChange} />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+          <TabsTrigger value="dashboard" className="flex items-center gap-2">
+            <LayoutDashboard className="w-4 h-4" />
+            <span className="hidden sm:inline">Command Center</span>
+            <span className="sm:hidden">Center</span>
+          </TabsTrigger>
+          <TabsTrigger value="crypto">Krypto</TabsTrigger>
+          <TabsTrigger value="physics">Physik</TabsTrigger>
+          <TabsTrigger value="math">Mathe & KI</TabsTrigger>
+        </TabsList>
 
-      <MirrorMode>
-        {/* Ur-Zahl & Chronoplast */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <UrZahlGenerator />
-          <LinkeChronoplast />
-        </div>
+        {/* DASHBOARD TAB - Command Center */}
+        <TabsContent value="dashboard" className="mt-6">
+          <PersonalSignature onSignatureChange={handleSignatureChange} />
+          <div className="mt-6">
+            <OmegaChaosDashboard />
+          </div>
+          <div className="mt-6">
+            <AIAssistant />
+          </div>
+        </TabsContent>
 
-        {/* SHA-256 & Moiré */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <SHA256PaperComputer />
-          <MoireEncryption />
-        </div>
+        {/* CRYPTO TAB */}
+        <TabsContent value="crypto" className="mt-6 space-y-6">
+          <MirrorMode>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <BitcoinPuzzleSolver />
+              <ECDSACryptoModule />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <SHA256PaperComputer />
+              <MoireEncryption />
+            </div>
+          </MirrorMode>
+        </TabsContent>
 
-        {/* Schwarm-Intelligenz & Bitcoin Puzzle */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <OmegaSwarmIntelligence />
-          <BitcoinPuzzleSolver />
-        </div>
+        {/* PHYSICS TAB */}
+        <TabsContent value="physics" className="mt-6 space-y-6">
+          <MirrorMode>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <QuantumModule />
+              <QuantumVacuumSimulator />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <CosmologyCalculator personalSignature={signature || undefined} userName={userName} />
+              <LinkeChronoplast />
+            </div>
+            <div className="mt-6">
+              <BifurcationDiagram />
+            </div>
+          </MirrorMode>
+        </TabsContent>
 
-        {/* Core Modules */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <AlgorithmBackward />
-          <CosmologyCalculator personalSignature={signature || undefined} userName={userName} />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          <ECDSACryptoModule />
-          <BifurcationDiagram />
-        </div>
-
-        <div className="mt-6"><InverseMath /></div>
-        <div className="mt-6"><DifferentialEquationSolver /></div>
-        <div className="mt-6"><SEIRSimulator /></div>
-        <div className="mt-6"><QuantumVacuumSimulator /></div>
-        <div className="mt-6"><QuantumModule /></div>
-      </MirrorMode>
+        {/* MATH & AI TAB */}
+        <TabsContent value="math" className="mt-6 space-y-6">
+          <MirrorMode>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <UrZahlGenerator />
+              <OmegaSwarmIntelligence />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <AlgorithmBackward />
+              <InverseMath />
+            </div>
+            <div className="mt-6">
+              <DifferentialEquationSolver />
+            </div>
+            <div className="mt-6">
+              <SEIRSimulator />
+            </div>
+          </MirrorMode>
+        </TabsContent>
+      </Tabs>
 
       <div className="text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            Alle Berechnungen sind mathematisch korrekt und invertierbar
+            16 wissenschaftliche Module • Chaos-integriert • Mathematisch korrekt
           </span>
         </div>
       </div>
-
-      <AIAssistant />
     </div>
   );
 }
@@ -130,3 +167,4 @@ export { SHA256PaperComputer } from './SHA256PaperComputer';
 export { MoireEncryption } from './MoireEncryption';
 export { OmegaSwarmIntelligence } from './OmegaSwarmIntelligence';
 export { BitcoinPuzzleSolver } from './BitcoinPuzzleSolver';
+export { OmegaChaosDashboard } from './OmegaChaosDashboard';
