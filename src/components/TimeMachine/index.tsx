@@ -18,6 +18,7 @@ import { LinkeChronoplast } from './LinkeChronoplast';
 import { SHA256PaperComputer } from './SHA256PaperComputer';
 import { MoireEncryption } from './MoireEncryption';
 import { OmegaSwarmIntelligence } from './OmegaSwarmIntelligence';
+import { BitcoinPuzzleSolver } from './BitcoinPuzzleSolver';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -73,9 +74,10 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           <MoireEncryption />
         </div>
 
-        {/* Schwarm-Intelligenz */}
-        <div className="mt-6">
+        {/* Schwarm-Intelligenz & Bitcoin Puzzle */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           <OmegaSwarmIntelligence />
+          <BitcoinPuzzleSolver />
         </div>
 
         {/* Core Modules */}
@@ -127,3 +129,4 @@ export { LinkeChronoplast } from './LinkeChronoplast';
 export { SHA256PaperComputer } from './SHA256PaperComputer';
 export { MoireEncryption } from './MoireEncryption';
 export { OmegaSwarmIntelligence } from './OmegaSwarmIntelligence';
+export { BitcoinPuzzleSolver } from './BitcoinPuzzleSolver';
