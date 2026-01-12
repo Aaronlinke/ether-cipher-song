@@ -21,6 +21,7 @@ import { MoireEncryption } from './MoireEncryption';
 import { OmegaSwarmIntelligence } from './OmegaSwarmIntelligence';
 import { BitcoinPuzzleSolver } from './BitcoinPuzzleSolver';
 import { OmegaChaosDashboard } from './OmegaChaosDashboard';
+import { SwarmKeyHunter } from './SwarmKeyHunter';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -91,6 +92,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <BitcoinPuzzleSolver />
               <ECDSACryptoModule />
+            </div>
+            <div className="mt-6">
+              <SwarmKeyHunter />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <SHA256PaperComputer />
@@ -168,3 +172,4 @@ export { MoireEncryption } from './MoireEncryption';
 export { OmegaSwarmIntelligence } from './OmegaSwarmIntelligence';
 export { BitcoinPuzzleSolver } from './BitcoinPuzzleSolver';
 export { OmegaChaosDashboard } from './OmegaChaosDashboard';
+export { SwarmKeyHunter } from './SwarmKeyHunter';
