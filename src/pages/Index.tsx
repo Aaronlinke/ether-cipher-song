@@ -9,6 +9,8 @@ import { WifConverter } from '@/components/WifConverter';
 import { BruteForceCalculator } from '@/components/BruteForceCalculator';
 import { AddressGenerator } from '@/components/AddressGenerator';
 import { Bip39Generator } from '@/components/Bip39Generator';
+import { Bip39ToExtendedKey } from '@/components/Bip39ToExtendedKey';
+import { WifBalanceChecker } from '@/components/WifBalanceChecker';
 import { TimeMachine } from '@/components/TimeMachine';
 import { LegalDisclaimer } from '@/components/LegalDisclaimer';
 import { Button } from '@/components/ui/button';
@@ -78,7 +80,11 @@ const Index = () => {
                 <WifConverter />
                 <BruteForceCalculator />
               </div>
-              <div className="mb-8"><Bip39Generator /></div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <Bip39Generator />
+                <WifBalanceChecker />
+              </div>
+              <div className="mb-8"><Bip39ToExtendedKey /></div>
 
               <div className="mt-12 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-gold/20 bg-card/50 backdrop-blur-sm">
