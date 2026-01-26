@@ -10,6 +10,7 @@ import { BruteForceCalculator } from '@/components/BruteForceCalculator';
 import { AddressGenerator } from '@/components/AddressGenerator';
 import { Bip39Generator } from '@/components/Bip39Generator';
 import { TimeMachine } from '@/components/TimeMachine';
+import { LegalDisclaimer } from '@/components/LegalDisclaimer';
 import { Button } from '@/components/ui/button';
 import { Clock, Binary } from 'lucide-react';
 
@@ -24,6 +25,9 @@ const Index = () => {
         <Header />
 
         <main className="container mx-auto px-4 py-8">
+          {/* Legal Disclaimer at top */}
+          <LegalDisclaimer />
+
           {/* View Toggle */}
           <div className="flex justify-center gap-4 mb-8">
             <Button
