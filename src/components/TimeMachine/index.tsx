@@ -23,6 +23,7 @@ import { BitcoinPuzzleSolver } from './BitcoinPuzzleSolver';
 import { OmegaChaosDashboard } from './OmegaChaosDashboard';
 import { SwarmKeyHunter } from './SwarmKeyHunter';
 import { ExtendedKeyConverter } from './ExtendedKeyConverter';
+import { MasterformelEngine } from './MasterformelEngine';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -92,14 +93,17 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           <MirrorMode>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <BitcoinPuzzleSolver />
+              <MasterformelEngine />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <ECDSACryptoModule />
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <SwarmKeyHunter />
-              <ExtendedKeyConverter />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <ExtendedKeyConverter />
               <SHA256PaperComputer />
+            </div>
+            <div className="mt-6">
               <MoireEncryption />
             </div>
           </MirrorMode>
@@ -147,7 +151,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            17 wissenschaftliche Module • Chaos-integriert • Mathematisch korrekt
+            18 wissenschaftliche Module • Masterformel-integriert • Mathematisch korrekt
           </span>
         </div>
       </div>
@@ -176,3 +180,4 @@ export { BitcoinPuzzleSolver } from './BitcoinPuzzleSolver';
 export { OmegaChaosDashboard } from './OmegaChaosDashboard';
 export { SwarmKeyHunter } from './SwarmKeyHunter';
 export { ExtendedKeyConverter } from './ExtendedKeyConverter';
+export { MasterformelEngine } from './MasterformelEngine';
