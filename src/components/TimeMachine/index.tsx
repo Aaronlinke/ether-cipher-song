@@ -24,6 +24,7 @@ import { OmegaChaosDashboard } from './OmegaChaosDashboard';
 import { SwarmKeyHunter } from './SwarmKeyHunter';
 import { ExtendedKeyConverter } from './ExtendedKeyConverter';
 import { MasterformelEngine } from './MasterformelEngine';
+import { OmniGenesisEngine } from './OmniGenesisEngine';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -80,6 +81,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         {/* DASHBOARD TAB - Command Center */}
         <TabsContent value="dashboard" className="mt-6">
           <PersonalSignature onSignatureChange={handleSignatureChange} />
+          <div className="mt-6">
+            <OmniGenesisEngine />
+          </div>
           <div className="mt-6">
             <OmegaChaosDashboard />
           </div>
@@ -151,7 +155,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            18 wissenschaftliche Module • Masterformel-integriert • Mathematisch korrekt
+            19 wissenschaftliche Module • OMNI-GENESIS integriert • Mathematisch korrekt
           </span>
         </div>
       </div>
@@ -181,3 +185,4 @@ export { OmegaChaosDashboard } from './OmegaChaosDashboard';
 export { SwarmKeyHunter } from './SwarmKeyHunter';
 export { ExtendedKeyConverter } from './ExtendedKeyConverter';
 export { MasterformelEngine } from './MasterformelEngine';
+export { OmniGenesisEngine } from './OmniGenesisEngine';
