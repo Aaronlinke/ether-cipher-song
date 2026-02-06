@@ -25,6 +25,9 @@ import { SwarmKeyHunter } from './SwarmKeyHunter';
 import { ExtendedKeyConverter } from './ExtendedKeyConverter';
 import { MasterformelEngine } from './MasterformelEngine';
 import { OmniGenesisEngine } from './OmniGenesisEngine';
+import { SRILPipeline } from './SRILPipeline';
+import { FrequencyAnalyzer } from './FrequencyAnalyzer';
+import { DeltaSolver } from './DeltaSolver';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -95,19 +98,21 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         {/* CRYPTO TAB */}
         <TabsContent value="crypto" className="mt-6 space-y-6">
           <MirrorMode>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <SRILPipeline />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <BitcoinPuzzleSolver />
               <MasterformelEngine />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-              <ECDSACryptoModule />
+              <DeltaSolver />
               <SwarmKeyHunter />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <ECDSACryptoModule />
               <ExtendedKeyConverter />
-              <SHA256PaperComputer />
             </div>
-            <div className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <SHA256PaperComputer />
               <MoireEncryption />
             </div>
           </MirrorMode>
@@ -133,7 +138,8 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         {/* MATH & AI TAB */}
         <TabsContent value="math" className="mt-6 space-y-6">
           <MirrorMode>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <FrequencyAnalyzer />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <UrZahlGenerator />
               <OmegaSwarmIntelligence />
             </div>
@@ -155,7 +161,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            19 wissenschaftliche Module • OMNI-GENESIS integriert • Mathematisch korrekt
+            22 wissenschaftliche Module • SRIL-Pipeline integriert • Mathematisch korrekt
           </span>
         </div>
       </div>
@@ -186,3 +192,6 @@ export { SwarmKeyHunter } from './SwarmKeyHunter';
 export { ExtendedKeyConverter } from './ExtendedKeyConverter';
 export { MasterformelEngine } from './MasterformelEngine';
 export { OmniGenesisEngine } from './OmniGenesisEngine';
+export { SRILPipeline } from './SRILPipeline';
+export { FrequencyAnalyzer } from './FrequencyAnalyzer';
+export { DeltaSolver } from './DeltaSolver';
