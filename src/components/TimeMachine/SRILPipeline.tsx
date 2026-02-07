@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   GitMerge, Play, Pause, RotateCcw, Zap, ArrowRight,
-  Target, TrendingUp, Radio, Cpu, Flame, ChevronRight
+  Target, TrendingUp, Radio, Cpu, Flame, ChevronRight,
+  Download, FileJson, FileSpreadsheet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -434,6 +435,66 @@ export function SRILPipeline() {
             </ScrollArea>
           </div>
         )}
+
+        {/* Export Buttons */}
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1 text-xs"
+            disabled={filteredCandidates.length === 0}
+            onClick={() => {
+              const data = {
+                timestamp: new Date().toISOString(),
+                srilState: { H: state.H, N: state.N, G: state.G, t: state.t },
+                totalGenerated,
+                totalFiltered,
+                bestScore: 1 - bestScore,
+                candidates: filteredCandidates.map(c => ({
+                  index: c.index,
+                  key: c.key,
+                  entropy: c.entropy,
+                  score: 1 - c.score,
+                  source: c.source,
+                })),
+              };
+              const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `sril-pipeline-t${state.t}-${Date.now()}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+              log(`📥 Export: ${filteredCandidates.length} Kandidaten (JSON)`);
+            }}
+          >
+            <FileJson className="w-3 h-3 mr-1" />
+            JSON
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1 text-xs"
+            disabled={filteredCandidates.length === 0}
+            onClick={() => {
+              const header = 'index,key,entropy,score,source\n';
+              const rows = filteredCandidates.map(c =>
+                `${c.index},${c.key},${c.entropy.toFixed(6)},${(1 - c.score).toFixed(6)},${c.source}`
+              ).join('\n');
+              const blob = new Blob([header + rows], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `sril-pipeline-t${state.t}-${Date.now()}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+              log(`📥 Export: ${filteredCandidates.length} Kandidaten (CSV)`);
+            }}
+          >
+            <FileSpreadsheet className="w-3 h-3 mr-1" />
+            CSV
+          </Button>
+        </div>
 
         {/* Log */}
         <ScrollArea className="h-20 rounded border border-muted bg-black/30">
