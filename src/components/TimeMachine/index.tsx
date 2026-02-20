@@ -30,6 +30,9 @@ import { FrequencyAnalyzer } from './FrequencyAnalyzer';
 import { DeltaSolver } from './DeltaSolver';
 import { SRILPhaseSpace3D } from './SRILPhaseSpace3D';
 import { DeltaPuzzleConnector } from './DeltaPuzzleConnector';
+import { LorenzAttractorPanel } from './LorenzAttractorPanel';
+import { BlochSpherePanel } from './BlochSpherePanel';
+import { BatchRunner } from './BatchRunner';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -101,6 +104,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <TabsContent value="crypto" className="mt-6 space-y-6">
           <MirrorMode>
             <SRILPipeline />
+            <div className="mt-6">
+              <BatchRunner />
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <DeltaPuzzleConnector />
               <BitcoinPuzzleSolver />
@@ -126,16 +132,20 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         {/* PHYSICS TAB */}
         <TabsContent value="physics" className="mt-6 space-y-6">
           <MirrorMode>
-            <SRILPhaseSpace3D />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <SRILPhaseSpace3D />
+              <LorenzAttractorPanel />
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <BlochSpherePanel />
               <QuantumModule />
-              <QuantumVacuumSimulator />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <QuantumVacuumSimulator />
               <CosmologyCalculator personalSignature={signature || undefined} userName={userName} />
-              <LinkeChronoplast />
             </div>
-            <div className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <LinkeChronoplast />
               <BifurcationDiagram />
             </div>
           </MirrorMode>
@@ -167,7 +177,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            24 wissenschaftliche Module • SRIL-Pipeline + 3D-Phasenraum • Delta↔Puzzle Connector
+            27 wissenschaftliche Module • Lorenz + Bloch-Kugel + Batch-Runner • OMEGA CHAOS
           </span>
         </div>
       </div>
@@ -203,3 +213,6 @@ export { FrequencyAnalyzer } from './FrequencyAnalyzer';
 export { DeltaSolver } from './DeltaSolver';
 export { SRILPhaseSpace3D } from './SRILPhaseSpace3D';
 export { DeltaPuzzleConnector } from './DeltaPuzzleConnector';
+export { LorenzAttractorPanel } from './LorenzAttractorPanel';
+export { BlochSpherePanel } from './BlochSpherePanel';
+export { BatchRunner } from './BatchRunner';
