@@ -35,6 +35,10 @@ import { BlochSpherePanel } from './BlochSpherePanel';
 import { BatchRunner } from './BatchRunner';
 import { AutoPipelineConnector } from './AutoPipelineConnector';
 import { LiveStatsPanel } from './LiveStatsPanel';
+import { UTASEdhi } from './UTASEdhi';
+import { UTASPfe } from './UTASPfe';
+import { UTASSor } from './UTASSor';
+import { UTASUae } from './UTASUae';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -77,12 +81,13 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <LayoutDashboard className="w-4 h-4" />
             <span className="hidden sm:inline">Command Center</span>
             <span className="sm:hidden">Center</span>
           </TabsTrigger>
+          <TabsTrigger value="utas">UTAS</TabsTrigger>
           <TabsTrigger value="crypto">Krypto</TabsTrigger>
           <TabsTrigger value="physics">Physik</TabsTrigger>
           <TabsTrigger value="math">Mathe & KI</TabsTrigger>
@@ -103,6 +108,28 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           <div className="mt-6">
             <AIAssistant />
           </div>
+        </TabsContent>
+
+        {/* UTAS TAB — Unified Theory of Axiomatic Subversion */}
+        <TabsContent value="utas" className="mt-6 space-y-6">
+          <MirrorMode>
+            <div className="bg-crypto-purple/5 border border-crypto-purple/20 rounded-lg p-4 mb-4">
+              <h3 className="text-sm font-display text-crypto-purple uppercase tracking-wider mb-1">
+                UTAS — Unified Theory of Axiomatic Subversion
+              </h3>
+              <p className="text-[10px] text-muted-foreground font-mono">
+                ∂<sub>t</sub>ℱ(x,t) = ∇<sub>TQII</sub> · ℱ(x,t) + ℛ(ℱ) — Holomorphe Strömung auf Calabi-Yau-Mannigfaltigkeit
+              </p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <UTASEdhi />
+              <UTASPfe />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <UTASSor />
+              <UTASUae />
+            </div>
+          </MirrorMode>
         </TabsContent>
 
         {/* CRYPTO TAB */}
@@ -185,7 +212,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            29 wissenschaftliche Module • Auto-Pipeline + Live-Stats + DB-Persistenz • OMEGA CHAOS
+            33 wissenschaftliche Module • UTAS (EDHI+PFE+SOR+UAE) • OMEGA CHAOS
           </span>
         </div>
       </div>
@@ -226,3 +253,7 @@ export { BlochSpherePanel } from './BlochSpherePanel';
 export { BatchRunner } from './BatchRunner';
 export { AutoPipelineConnector } from './AutoPipelineConnector';
 export { LiveStatsPanel } from './LiveStatsPanel';
+export { UTASEdhi } from './UTASEdhi';
+export { UTASPfe } from './UTASPfe';
+export { UTASSor } from './UTASSor';
+export { UTASUae } from './UTASUae';
