@@ -61,7 +61,7 @@ export function UTASSor() {
     // FV structure — deterministic entropy of RNG
     const fvStructure = rBytes.map((rb, i) => {
       const sb = sBytes[i] || 0;
-      return Math.sin(rb * Math.PI * 3) * Math.cos(sb * Math.PI * 5) * Math.exp(-(rb - sb) ** 2);
+      return Math.sin(rb * Math.PI * 3) * Math.cos(sb * Math.PI * 5) * Math.exp(-((rb - sb) ** 2));
     });
 
     // Deterministic entropy (low = more predictable)
