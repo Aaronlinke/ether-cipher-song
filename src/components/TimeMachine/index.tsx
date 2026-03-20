@@ -253,3 +253,7 @@ export { BlochSpherePanel } from './BlochSpherePanel';
 export { BatchRunner } from './BatchRunner';
 export { AutoPipelineConnector } from './AutoPipelineConnector';
 export { LiveStatsPanel } from './LiveStatsPanel';
+export { UTASEdhi } from './UTASEdhi';
+export { UTASPfe } from './UTASPfe';
+export { UTASSor } from './UTASSor';
+export { UTASUae } from './UTASUae';
