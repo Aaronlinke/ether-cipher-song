@@ -110,6 +110,28 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           </div>
         </TabsContent>
 
+        {/* UTAS TAB — Unified Theory of Axiomatic Subversion */}
+        <TabsContent value="utas" className="mt-6 space-y-6">
+          <MirrorMode>
+            <div className="bg-crypto-purple/5 border border-crypto-purple/20 rounded-lg p-4 mb-4">
+              <h3 className="text-sm font-display text-crypto-purple uppercase tracking-wider mb-1">
+                UTAS — Unified Theory of Axiomatic Subversion
+              </h3>
+              <p className="text-[10px] text-muted-foreground font-mono">
+                ∂<sub>t</sub>ℱ(x,t) = ∇<sub>TQII</sub> · ℱ(x,t) + ℛ(ℱ) — Holomorphe Strömung auf Calabi-Yau-Mannigfaltigkeit
+              </p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <UTASEdhi />
+              <UTASPfe />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <UTASSor />
+              <UTASUae />
+            </div>
+          </MirrorMode>
+        </TabsContent>
+
         {/* CRYPTO TAB */}
         <TabsContent value="crypto" className="mt-6 space-y-6">
           <MirrorMode>
