@@ -138,7 +138,7 @@ export function SRILPipeline() {
   const [totalGenerated, setTotalGenerated] = useState(0);
   const [totalFiltered, setTotalFiltered] = useState(0);
   const [bestScore, setBestScore] = useState(1);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const log = useCallback((msg: string) => {
     setLogs(prev => [...prev.slice(-80), `[${new Date().toLocaleTimeString()}] ${msg}`]);

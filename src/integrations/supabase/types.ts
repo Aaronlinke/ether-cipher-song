@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      batch_candidates: {
+        Row: {
+          created_at: string
+          entropy: number
+          filters_passed: string[] | null
+          hamming_weight: number | null
+          hex_key: string
+          id: string
+          puzzle_number: number
+          score: number
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          entropy?: number
+          filters_passed?: string[] | null
+          hamming_weight?: number | null
+          hex_key: string
+          id?: string
+          puzzle_number?: number
+          score?: number
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          entropy?: number
+          filters_passed?: string[] | null
+          hamming_weight?: number | null
+          hex_key?: string
+          id?: string
+          puzzle_number?: number
+          score?: number
+          source?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

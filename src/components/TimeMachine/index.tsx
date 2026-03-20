@@ -33,6 +33,8 @@ import { DeltaPuzzleConnector } from './DeltaPuzzleConnector';
 import { LorenzAttractorPanel } from './LorenzAttractorPanel';
 import { BlochSpherePanel } from './BlochSpherePanel';
 import { BatchRunner } from './BatchRunner';
+import { AutoPipelineConnector } from './AutoPipelineConnector';
+import { LiveStatsPanel } from './LiveStatsPanel';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -93,6 +95,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
             <OmniGenesisEngine />
           </div>
           <div className="mt-6">
+            <LiveStatsPanel />
+          </div>
+          <div className="mt-6">
             <OmegaChaosDashboard />
           </div>
           <div className="mt-6">
@@ -104,6 +109,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <TabsContent value="crypto" className="mt-6 space-y-6">
           <MirrorMode>
             <SRILPipeline />
+            <div className="mt-6">
+              <AutoPipelineConnector />
+            </div>
             <div className="mt-6">
               <BatchRunner />
             </div>
@@ -177,7 +185,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            27 wissenschaftliche Module • Lorenz + Bloch-Kugel + Batch-Runner • OMEGA CHAOS
+            29 wissenschaftliche Module • Auto-Pipeline + Live-Stats + DB-Persistenz • OMEGA CHAOS
           </span>
         </div>
       </div>
@@ -216,3 +224,5 @@ export { DeltaPuzzleConnector } from './DeltaPuzzleConnector';
 export { LorenzAttractorPanel } from './LorenzAttractorPanel';
 export { BlochSpherePanel } from './BlochSpherePanel';
 export { BatchRunner } from './BatchRunner';
+export { AutoPipelineConnector } from './AutoPipelineConnector';
+export { LiveStatsPanel } from './LiveStatsPanel';

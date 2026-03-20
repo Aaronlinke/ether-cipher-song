@@ -153,7 +153,7 @@ export function OmegaSwarmIntelligence() {
 
   // Animation Loop
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (running && swarm) {
       interval = setInterval(stepSwarm, 50);
     }
