@@ -81,12 +81,13 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <LayoutDashboard className="w-4 h-4" />
             <span className="hidden sm:inline">Command Center</span>
             <span className="sm:hidden">Center</span>
           </TabsTrigger>
+          <TabsTrigger value="utas">UTAS</TabsTrigger>
           <TabsTrigger value="crypto">Krypto</TabsTrigger>
           <TabsTrigger value="physics">Physik</TabsTrigger>
           <TabsTrigger value="math">Mathe & KI</TabsTrigger>
