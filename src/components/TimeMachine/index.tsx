@@ -33,6 +33,8 @@ import { DeltaPuzzleConnector } from './DeltaPuzzleConnector';
 import { LorenzAttractorPanel } from './LorenzAttractorPanel';
 import { BlochSpherePanel } from './BlochSpherePanel';
 import { BatchRunner } from './BatchRunner';
+import { AutoPipelineConnector } from './AutoPipelineConnector';
+import { LiveStatsPanel } from './LiveStatsPanel';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
