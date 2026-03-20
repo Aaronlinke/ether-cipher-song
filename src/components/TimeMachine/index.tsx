@@ -110,6 +110,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           <MirrorMode>
             <SRILPipeline />
             <div className="mt-6">
+              <AutoPipelineConnector />
+            </div>
+            <div className="mt-6">
               <BatchRunner />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
