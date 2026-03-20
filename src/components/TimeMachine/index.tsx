@@ -224,3 +224,5 @@ export { DeltaPuzzleConnector } from './DeltaPuzzleConnector';
 export { LorenzAttractorPanel } from './LorenzAttractorPanel';
 export { BlochSpherePanel } from './BlochSpherePanel';
 export { BatchRunner } from './BatchRunner';
+export { AutoPipelineConnector } from './AutoPipelineConnector';
+export { LiveStatsPanel } from './LiveStatsPanel';
