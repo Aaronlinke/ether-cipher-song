@@ -95,6 +95,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
             <OmniGenesisEngine />
           </div>
           <div className="mt-6">
+            <LiveStatsPanel />
+          </div>
+          <div className="mt-6">
             <OmegaChaosDashboard />
           </div>
           <div className="mt-6">
