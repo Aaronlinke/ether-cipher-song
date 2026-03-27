@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Clock, Atom, ArrowLeft, LayoutDashboard } from 'lucide-react';
+import { Clock, Atom, ArrowLeft, LayoutDashboard, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PersonalSignature } from './PersonalSignature';
@@ -39,6 +39,7 @@ import { UTASEdhi } from './UTASEdhi';
 import { UTASPfe } from './UTASPfe';
 import { UTASSor } from './UTASSor';
 import { UTASUae } from './UTASUae';
+import { NexusMathExplorer } from './NexusMathExplorer';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -81,11 +82,16 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <LayoutDashboard className="w-4 h-4" />
             <span className="hidden sm:inline">Command Center</span>
             <span className="sm:hidden">Center</span>
+          </TabsTrigger>
+          <TabsTrigger value="nexus" className="flex items-center gap-1">
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden sm:inline">Nexus</span>
+            <span className="sm:hidden">Nexus</span>
           </TabsTrigger>
           <TabsTrigger value="utas">UTAS</TabsTrigger>
           <TabsTrigger value="crypto">Krypto</TabsTrigger>
@@ -108,6 +114,11 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           <div className="mt-6">
             <AIAssistant />
           </div>
+        </TabsContent>
+
+        {/* NEXUS TAB — Mathematics Explorer */}
+        <TabsContent value="nexus" className="mt-6">
+          <NexusMathExplorer />
         </TabsContent>
 
         {/* UTAS TAB — Unified Theory of Axiomatic Subversion */}
@@ -212,7 +223,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            33 wissenschaftliche Module • UTAS (EDHI+PFE+SOR+UAE) • OMEGA CHAOS
+            33 wissenschaftliche Module • NEXUS (85+ Formeln) • UTAS • OMEGA CHAOS
           </span>
         </div>
       </div>
@@ -257,3 +268,4 @@ export { UTASEdhi } from './UTASEdhi';
 export { UTASPfe } from './UTASPfe';
 export { UTASSor } from './UTASSor';
 export { UTASUae } from './UTASUae';
+export { NexusMathExplorer } from './NexusMathExplorer';
