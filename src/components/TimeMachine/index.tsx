@@ -39,6 +39,7 @@ import { UTASEdhi } from './UTASEdhi';
 import { UTASPfe } from './UTASPfe';
 import { UTASSor } from './UTASSor';
 import { UTASUae } from './UTASUae';
+import { NexusMathExplorer } from './NexusMathExplorer';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
 interface TimeMachineProps {
@@ -81,11 +82,16 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <LayoutDashboard className="w-4 h-4" />
             <span className="hidden sm:inline">Command Center</span>
             <span className="sm:hidden">Center</span>
+          </TabsTrigger>
+          <TabsTrigger value="nexus" className="flex items-center gap-1">
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden sm:inline">Nexus</span>
+            <span className="sm:hidden">Nexus</span>
           </TabsTrigger>
           <TabsTrigger value="utas">UTAS</TabsTrigger>
           <TabsTrigger value="crypto">Krypto</TabsTrigger>
