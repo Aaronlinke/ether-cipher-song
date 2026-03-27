@@ -116,6 +116,11 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           </div>
         </TabsContent>
 
+        {/* NEXUS TAB — Mathematics Explorer */}
+        <TabsContent value="nexus" className="mt-6">
+          <NexusMathExplorer />
+        </TabsContent>
+
         {/* UTAS TAB — Unified Theory of Axiomatic Subversion */}
         <TabsContent value="utas" className="mt-6 space-y-6">
           <MirrorMode>
