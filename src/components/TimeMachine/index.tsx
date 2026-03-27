@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Clock, Atom, ArrowLeft, LayoutDashboard } from 'lucide-react';
+import { Clock, Atom, ArrowLeft, LayoutDashboard, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PersonalSignature } from './PersonalSignature';
