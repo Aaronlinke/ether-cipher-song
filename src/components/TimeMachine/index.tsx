@@ -117,9 +117,14 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
           </div>
         </TabsContent>
 
-        {/* NEXUS TAB — Mathematics Explorer */}
-        <TabsContent value="nexus" className="mt-6">
+        {/* NEXUS TAB — Mathematics Explorer + Simulations */}
+        <TabsContent value="nexus" className="mt-6 space-y-6">
           <NexusMathExplorer />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <LogisticMapSim />
+            <ShannonEntropySim />
+          </div>
+          <BirthdayAttackSim />
         </TabsContent>
 
         {/* UTAS TAB — Unified Theory of Axiomatic Subversion */}
