@@ -39,6 +39,8 @@ import { UTASEdhi } from './UTASEdhi';
 import { UTASPfe } from './UTASPfe';
 import { UTASSor } from './UTASSor';
 import { UTASUae } from './UTASUae';
+import { UTASSupermatrix } from './UTASSupermatrix';
+import { UTASPipelineConnector } from './UTASPipelineConnector';
 import { NexusMathExplorer } from './NexusMathExplorer';
 import { LogisticMapSim, ShannonEntropySim, BirthdayAttackSim } from './InteractiveSimulations';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
