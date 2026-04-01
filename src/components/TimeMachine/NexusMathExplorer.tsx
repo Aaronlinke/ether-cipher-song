@@ -30,8 +30,8 @@ function FormulaCard({ formula, catColor }: { formula: Formula; catColor: string
             {expanded ? <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" /> : <ChevronRight className="w-3 h-3 text-muted-foreground shrink-0" />}
             <h4 className="text-sm font-semibold text-foreground truncate">{formula.name}</h4>
           </div>
-          <div className="ml-5 font-mono text-xs p-2 rounded bg-background/60 border border-border/20 overflow-x-auto whitespace-nowrap" style={{ color: catColor }}>
-            {formula.latex}
+          <div className="ml-5 text-xs p-2 rounded bg-background/60 border border-border/20 overflow-x-auto">
+            <KaTeXRenderer latex={formula.latex} displayMode color={catColor} />
           </div>
         </div>
         <Badge variant="outline" className={`text-[9px] shrink-0 ${DIFFICULTY_COLORS[formula.difficulty]}`}>
