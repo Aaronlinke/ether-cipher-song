@@ -39,6 +39,8 @@ import { UTASEdhi } from './UTASEdhi';
 import { UTASPfe } from './UTASPfe';
 import { UTASSor } from './UTASSor';
 import { UTASUae } from './UTASUae';
+import { UTASSupermatrix } from './UTASSupermatrix';
+import { UTASPipelineConnector } from './UTASPipelineConnector';
 import { NexusMathExplorer } from './NexusMathExplorer';
 import { LogisticMapSim, ShannonEntropySim, BirthdayAttackSim } from './InteractiveSimulations';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
@@ -138,7 +140,13 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
                 ∂<sub>t</sub>ℱ(x,t) = ∇<sub>TQII</sub> · ℱ(x,t) + ℛ(ℱ) — Holomorphe Strömung auf Calabi-Yau-Mannigfaltigkeit
               </p>
             </div>
+            {/* Supermatrix & Pipeline */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <UTASSupermatrix />
+              <UTASPipelineConnector />
+            </div>
+            {/* Individual modules */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <UTASEdhi />
               <UTASPfe />
             </div>
@@ -229,7 +237,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            33 wissenschaftliche Module • NEXUS (85+ Formeln) • UTAS • OMEGA CHAOS
+            35 wissenschaftliche Module • NEXUS (85+ Formeln + KaTeX) • UTAS Supermatrix • OMEGA CHAOS
           </span>
         </div>
       </div>
@@ -274,4 +282,6 @@ export { UTASEdhi } from './UTASEdhi';
 export { UTASPfe } from './UTASPfe';
 export { UTASSor } from './UTASSor';
 export { UTASUae } from './UTASUae';
+export { UTASSupermatrix } from './UTASSupermatrix';
+export { UTASPipelineConnector } from './UTASPipelineConnector';
 export { NexusMathExplorer } from './NexusMathExplorer';
