@@ -84,7 +84,9 @@ function FormulaCard({ formula, catColor }: { formula: Formula; catColor: string
             <div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Alternative Formen</span>
               {formula.alternativeForms.map((af, i) => (
-                <div key={i} className="font-mono text-[10px] text-muted-foreground mt-0.5">{af}</div>
+                <div key={i} className="mt-1">
+                  <KaTeXRenderer latex={af} className="text-[10px]" />
+                </div>
               ))}
             </div>
           )}
