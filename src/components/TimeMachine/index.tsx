@@ -237,7 +237,7 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-purple/20 bg-card/50 backdrop-blur-sm">
           <div className="w-2 h-2 rounded-full bg-crypto-purple animate-pulse" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider">
-            33 wissenschaftliche Module • NEXUS (85+ Formeln) • UTAS • OMEGA CHAOS
+            35 wissenschaftliche Module • NEXUS (85+ Formeln + KaTeX) • UTAS Supermatrix • OMEGA CHAOS
           </span>
         </div>
       </div>
