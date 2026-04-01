@@ -5,8 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, BookOpen, ChevronDown, ChevronRight, Sparkles, Download } from 'lucide-react';
+import { Search, BookOpen, ChevronDown, ChevronRight, Sparkles, Download, FlaskConical } from 'lucide-react';
 import { NEXUS_CATEGORIES, searchFormulas, getTotalFormulaCount, type Formula, type FormulaCategory } from '@/lib/nexus-formulas';
+import { KaTeXRenderer } from './KaTeXRenderer';
 
 const DIFFICULTY_COLORS: Record<string, string> = {
   beginner: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
@@ -29,8 +30,8 @@ function FormulaCard({ formula, catColor }: { formula: Formula; catColor: string
             {expanded ? <ChevronDown className="w-3 h-3 text-muted-foreground shrink-0" /> : <ChevronRight className="w-3 h-3 text-muted-foreground shrink-0" />}
             <h4 className="text-sm font-semibold text-foreground truncate">{formula.name}</h4>
           </div>
-          <div className="ml-5 font-mono text-xs p-2 rounded bg-background/60 border border-border/20 overflow-x-auto whitespace-nowrap" style={{ color: catColor }}>
-            {formula.latex}
+          <div className="ml-5 text-xs p-2 rounded bg-background/60 border border-border/20 overflow-x-auto">
+            <KaTeXRenderer latex={formula.latex} displayMode color={catColor} />
           </div>
         </div>
         <Badge variant="outline" className={`text-[9px] shrink-0 ${DIFFICULTY_COLORS[formula.difficulty]}`}>
@@ -83,7 +84,9 @@ function FormulaCard({ formula, catColor }: { formula: Formula; catColor: string
             <div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Alternative Formen</span>
               {formula.alternativeForms.map((af, i) => (
-                <div key={i} className="font-mono text-[10px] text-muted-foreground mt-0.5">{af}</div>
+                <div key={i} className="mt-1">
+                  <KaTeXRenderer latex={af} className="text-[10px]" />
+                </div>
               ))}
             </div>
           )}
