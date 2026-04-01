@@ -5,8 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, BookOpen, ChevronDown, ChevronRight, Sparkles, Download } from 'lucide-react';
+import { Search, BookOpen, ChevronDown, ChevronRight, Sparkles, Download, FlaskConical } from 'lucide-react';
 import { NEXUS_CATEGORIES, searchFormulas, getTotalFormulaCount, type Formula, type FormulaCategory } from '@/lib/nexus-formulas';
+import { KaTeXRenderer } from './KaTeXRenderer';
 
 const DIFFICULTY_COLORS: Record<string, string> = {
   beginner: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
