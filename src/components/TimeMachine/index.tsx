@@ -140,7 +140,13 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
                 ∂<sub>t</sub>ℱ(x,t) = ∇<sub>TQII</sub> · ℱ(x,t) + ℛ(ℱ) — Holomorphe Strömung auf Calabi-Yau-Mannigfaltigkeit
               </p>
             </div>
+            {/* Supermatrix & Pipeline */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <UTASSupermatrix />
+              <UTASPipelineConnector />
+            </div>
+            {/* Individual modules */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <UTASEdhi />
               <UTASPfe />
             </div>
