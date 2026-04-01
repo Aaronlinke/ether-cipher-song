@@ -282,4 +282,6 @@ export { UTASEdhi } from './UTASEdhi';
 export { UTASPfe } from './UTASPfe';
 export { UTASSor } from './UTASSor';
 export { UTASUae } from './UTASUae';
+export { UTASSupermatrix } from './UTASSupermatrix';
+export { UTASPipelineConnector } from './UTASPipelineConnector';
 export { NexusMathExplorer } from './NexusMathExplorer';
