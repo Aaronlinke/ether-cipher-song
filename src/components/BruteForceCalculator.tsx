@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CryptoPanel } from './CryptoPanel';
 import { Calculator, Clock, Cpu, Zap, Play, Square, Target, Trophy, Activity } from 'lucide-react';
-import { useRef } from 'react';
 import { privateKeyToAddress, bytesToHex, generateRandomBytes } from '@/lib/crypto-utils';
 import { toast } from 'sonner';
 
