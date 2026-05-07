@@ -538,13 +538,30 @@ export function BruteForceCalculator() {
             </div>
           </div>
 
-          {lastKey && (
-            <div className="bg-muted/20 rounded p-2 mb-2">
-              <div className="text-[9px] text-muted-foreground uppercase mb-1">Letzter Key</div>
-              <div className="text-[9px] font-mono text-crypto-purple/80 break-all">{lastKey}</div>
-              <div className="text-[9px] font-mono text-crypto-blue/80 break-all mt-1">→ {lastAddr}</div>
+          {/* Bot-Schwarm Live-Status */}
+          <div className="space-y-1 mb-2">
+            <div className="text-[9px] text-muted-foreground uppercase mb-1 flex items-center gap-1">
+              <Cpu size={9} /> Schwarm — {BOTS.length} Bots parallel
             </div>
-          )}
+            {BOTS.map((b) => (
+              <div key={b.id} className={`bg-muted/20 rounded p-1.5 border border-${b.color}/20`}>
+                <div className="flex items-center justify-between text-[9px]">
+                  <span className={`font-display text-${b.color} uppercase tracking-wider`}>
+                    {b.name}
+                  </span>
+                  <span className="font-mono text-muted-foreground">
+                    {(botTries[b.id] || 0).toLocaleString('de-DE')}
+                  </span>
+                </div>
+                <div className="text-[8px] text-muted-foreground/70">{b.desc}</div>
+                {botLast[b.id] && (
+                  <div className={`text-[8px] font-mono text-${b.color}/70 break-all truncate`}>
+                    {botLast[b.id].slice(-32)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
 
           {bestKey && (
             <div className="bg-muted/20 rounded p-2 mb-2">
