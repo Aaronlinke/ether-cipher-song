@@ -99,6 +99,30 @@ export function BruteForceCalculator() {
   const lastTickRef = useRef(Date.now());
   const tickCountRef = useRef(0);
 
+  // === SWARM BOTS ===
+  type BotId = 'random' | 'cluster' | 'chess' | 'every2' | 'every3' | 'hextwist' | 'mirror';
+  const BOTS: { id: BotId; name: string; color: string; desc: string }[] = [
+    { id: 'random',   name: 'α Random',     color: 'crypto-blue',   desc: 'Reine Zufallssuche' },
+    { id: 'cluster',  name: 'β Cluster',    color: 'crypto-green',  desc: 'Sequentiell ab Random-Anker' },
+    { id: 'chess',    name: 'γ Schachbrett',color: 'crypto-purple', desc: 'Alternierende Bits 0101…' },
+    { id: 'every2',   name: 'δ Jeder 2.',   color: 'crypto-orange', desc: 'Skip-2 Stride' },
+    { id: 'every3',   name: 'ε Jeder 3.',   color: 'crypto-gold',   desc: 'Skip-3 Stride' },
+    { id: 'hextwist', name: 'ζ Hex-Dreher', color: 'crypto-red',    desc: 'Nibble-Swap Mutation' },
+    { id: 'mirror',   name: 'η Mirror',     color: 'crypto-blue',   desc: 'Bit-Reverse Spiegelung' },
+  ];
+  const [botTries, setBotTries] = useState<Record<BotId, number>>(() =>
+    Object.fromEntries(BOTS.map((b) => [b.id, 0])) as Record<BotId, number>
+  );
+  const [botLast, setBotLast] = useState<Record<BotId, string>>(() =>
+    Object.fromEntries(BOTS.map((b) => [b.id, ''])) as Record<BotId, string>
+  );
+  const botTriesRef = useRef<Record<BotId, number>>(
+    Object.fromEntries(BOTS.map((b) => [b.id, 0])) as Record<BotId, number>
+  );
+  const botCursorRef = useRef<Record<BotId, bigint>>(
+    Object.fromEntries(BOTS.map((b) => [b.id, 0n])) as Record<BotId, bigint>
+  );
+
   // Erzeuge zufälligen Private-Key innerhalb des gewählten Bit-Bereichs
   function randomKeyInRange(bitSize: number): string {
     const byteLen = Math.ceil(bitSize / 8);
@@ -112,8 +136,99 @@ export function BruteForceCalculator() {
     return hex;
   }
 
-  async function huntLoop() {
-    const BATCH = 50;
+  function bigIntToKeyHex(n: bigint, bitSize: number): string {
+    const max = (1n << BigInt(bitSize)) - 1n;
+    const min = 1n << BigInt(bitSize - 1);
+    if (max <= min) return n.toString(16).padStart(64, '0');
+    const range = max - min + 1n;
+    const v = min + ((n % range) + range) % range;
+    return v.toString(16).padStart(64, '0');
+  }
+
+  function randomBigInRange(bitSize: number): bigint {
+    const bytes = generateRandomBytes(Math.ceil(bitSize / 8));
+    let v = 0n;
+    for (const b of bytes) v = (v << 8n) | BigInt(b);
+    const min = 1n << BigInt(bitSize - 1);
+    const max = (1n << BigInt(bitSize)) - 1n;
+    return min + (v % (max - min + 1n));
+  }
+
+  function chessboardKey(bitSize: number, parity: bigint): string {
+    // 010101... or 101010... pattern within the bit range
+    let v = 0n;
+    for (let i = 0; i < bitSize; i++) {
+      if ((BigInt(i) + parity) % 2n === 0n) v |= 1n << BigInt(i);
+    }
+    // jitter low bits
+    const jitter = randomBigInRange(Math.min(bitSize, 24)) >> 1n;
+    v = v ^ (jitter & ((1n << BigInt(Math.min(bitSize - 4, 20))) - 1n));
+    return bigIntToKeyHex(v, bitSize);
+  }
+
+  function hexTwist(hex: string): string {
+    // Swap nibble pairs
+    const arr = hex.split('');
+    for (let i = 0; i + 1 < arr.length; i += 2) {
+      [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+    }
+    return arr.join('');
+  }
+
+  function mirrorBits(n: bigint, bitSize: number): bigint {
+    let r = 0n;
+    for (let i = 0; i < bitSize; i++) {
+      if ((n >> BigInt(i)) & 1n) r |= 1n << BigInt(bitSize - 1 - i);
+    }
+    return r;
+  }
+
+  function nextKey(bot: BotId, bitSize: number): string {
+    switch (bot) {
+      case 'random':
+        return randomKeyInRange(bitSize);
+      case 'cluster': {
+        if (botCursorRef.current[bot] === 0n) {
+          botCursorRef.current[bot] = randomBigInRange(bitSize);
+        }
+        const v = botCursorRef.current[bot];
+        botCursorRef.current[bot] = v + 1n;
+        return bigIntToKeyHex(v, bitSize);
+      }
+      case 'chess': {
+        const parity = botCursorRef.current[bot] % 2n;
+        botCursorRef.current[bot] = botCursorRef.current[bot] + 1n;
+        return chessboardKey(bitSize, parity);
+      }
+      case 'every2': {
+        if (botCursorRef.current[bot] === 0n) {
+          botCursorRef.current[bot] = randomBigInRange(bitSize) | 1n;
+        }
+        const v = botCursorRef.current[bot];
+        botCursorRef.current[bot] = v + 2n;
+        return bigIntToKeyHex(v, bitSize);
+      }
+      case 'every3': {
+        if (botCursorRef.current[bot] === 0n) {
+          botCursorRef.current[bot] = randomBigInRange(bitSize);
+        }
+        const v = botCursorRef.current[bot];
+        botCursorRef.current[bot] = v + 3n;
+        return bigIntToKeyHex(v, bitSize);
+      }
+      case 'hextwist': {
+        const base = randomKeyInRange(bitSize);
+        return hexTwist(base);
+      }
+      case 'mirror': {
+        const v = randomBigInRange(bitSize);
+        return bigIntToKeyHex(mirrorBits(v, bitSize), bitSize);
+      }
+    }
+  }
+
+  async function botLoop(bot: BotId) {
+    const BATCH = 25;
     while (huntingRef.current) {
       const targets = new Set<string>();
       const puzzleAddr = PUZZLE_TARGETS[bits];
@@ -121,17 +236,15 @@ export function BruteForceCalculator() {
       if (customTarget.trim()) targets.add(customTarget.trim());
 
       let lastK = '';
-      let lastA = '';
       for (let i = 0; i < BATCH && huntingRef.current; i++) {
-        const k = randomKeyInRange(bits);
+        const k = nextKey(bot, bits);
         try {
           const addr = await privateKeyToAddress(k, true);
           lastK = k;
-          lastA = addr;
           triesRef.current++;
           tickCountRef.current++;
+          botTriesRef.current[bot]++;
 
-          // Entropie-Tracking (wie viele unterschiedliche Hex-Zeichen)
           const uniq = new Set(addr.slice(1, 20)).size;
           if (uniq > bestEntropy) {
             setBestEntropy(uniq);
@@ -142,29 +255,34 @@ export function BruteForceCalculator() {
             huntingRef.current = false;
             setHunting(false);
             setFound({ key: k, addr });
-            toast.success(`🎯 TREFFER! Adresse ${addr} gefunden!`, { duration: 30000 });
+            toast.success(`🎯 TREFFER von ${bot}! ${addr}`, { duration: 60000 });
             return;
           }
         } catch (e) {
           // skip invalid keys
         }
       }
-      setLastKey(lastK);
-      setLastAddr(lastA);
-      setTries(triesRef.current);
+      setBotLast((prev) => ({ ...prev, [bot]: lastK }));
+      await new Promise((r) => setTimeout(r, 0));
+    }
+  }
 
-      // Speed-Berechnung
+  function uiTickLoop() {
+    const id = setInterval(() => {
+      if (!huntingRef.current) {
+        clearInterval(id);
+        return;
+      }
+      setTries(triesRef.current);
+      setBotTries({ ...botTriesRef.current });
       const now = Date.now();
       const dt = now - lastTickRef.current;
-      if (dt >= 500) {
+      if (dt >= 400) {
         setRealSpeed(Math.round((tickCountRef.current / dt) * 1000));
         tickCountRef.current = 0;
         lastTickRef.current = now;
       }
-
-      // yield to UI
-      await new Promise((r) => setTimeout(r, 0));
-    }
+    }, 250);
   }
 
   function startHunt() {
@@ -177,10 +295,17 @@ export function BruteForceCalculator() {
     setFound(null);
     setBestEntropy(0);
     setBestKey('');
+    BOTS.forEach((b) => {
+      botTriesRef.current[b.id] = 0;
+      botCursorRef.current[b.id] = 0n;
+    });
+    setBotTries(Object.fromEntries(BOTS.map((b) => [b.id, 0])) as Record<BotId, number>);
+    setBotLast(Object.fromEntries(BOTS.map((b) => [b.id, ''])) as Record<BotId, string>);
     huntingRef.current = true;
     setHunting(true);
-    toast.info(`🚀 OMNI-HUNTER gestartet — ${bits}-bit Range`);
-    huntLoop();
+    toast.info(`🚀 SWARM gestartet — ${BOTS.length} Bots auf ${bits}-bit Puzzle`);
+    BOTS.forEach((b) => botLoop(b.id));
+    uiTickLoop();
   }
 
   function stopHunt() {
