@@ -4,29 +4,32 @@ import { Calculator, Clock, Cpu, Zap, Play, Square, Target, Trophy, Activity } f
 import { privateKeyToAddress, bytesToHex, generateRandomBytes } from '@/lib/crypto-utils';
 import { toast } from 'sonner';
 
-// Bekannte Bitcoin-Puzzle-Adressen (ungelöste + einige berühmte)
+// AKTUELL UNGELÖSTE Bitcoin-Puzzle-Adressen (Stand 2026)
+// Alle Puzzles unter #71 sind bereits gelöst — wir jagen nur noch die offenen.
 const PUZZLE_TARGETS: Record<number, string> = {
-  32: '187swFMjz1G54ycVU56B7jZFHFTNVQFDiu',
-  33: '1HsMJxNiV7TLxmoF6uJNkydxPFDog4NQum',
-  40: '1EeAxcprB2PpCnr34VfZdFrkUWuxyiNEFv',
-  50: '1MEzite4ReNuWaL5Ds17ePKt2dCxWEofwk',
-  64: '16jY7qLJnxb7CHZyqBP8qca9d51gAjyXQN',
-  66: '13zb1hQbWVsc2S7ZTZnP2G4undNNpdh5so',
-  67: '1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9',
   71: '1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU',
   72: '1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR',
+  73: '12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4',
+  74: '1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv',
+  75: '1J36UjUByGroXcCvmj13U6uwaVv9caEeAt',
+  76: '1DJh2eHFYQfACPmrvpyWc8MSTYKh7w9eRF',
+  77: '1Bxk4CQdqL9p22JEtDfdXMsng1XacifUtE',
+  78: '15qF6X51huDjqTmF9BJgxXdt1xcj46Jmhb',
+  79: '1ARk8HWJMn8js8tQmGUJeQHjSE7KRkn2t8',
+  80: '1BCf6rHUW6m3iH2ptsvnjgLruAiPQQepLe',
 };
 
 const presets = [
-  { bits: 32, name: 'Puzzle #32', color: 'crypto-green' },
-  { bits: 40, name: 'Puzzle #40', color: 'crypto-green' },
-  { bits: 50, name: 'Puzzle #50', color: 'crypto-blue' },
-  { bits: 66, name: 'Puzzle #66', color: 'crypto-purple' },
-  { bits: 71, name: 'Puzzle #71', color: 'crypto-orange' },
-  { bits: 80, name: '80 bits', color: 'crypto-red' },
-  { bits: 128, name: 'AES-128', color: 'crypto-red' },
-  { bits: 160, name: 'Puzzle #160', color: 'crypto-red' },
-  { bits: 256, name: 'Bitcoin Key', color: 'crypto-red' },
+  { bits: 71, name: 'Puzzle #71 ⚡', color: 'crypto-orange' },
+  { bits: 72, name: 'Puzzle #72', color: 'crypto-orange' },
+  { bits: 73, name: 'Puzzle #73', color: 'crypto-orange' },
+  { bits: 74, name: 'Puzzle #74', color: 'crypto-purple' },
+  { bits: 75, name: 'Puzzle #75', color: 'crypto-purple' },
+  { bits: 76, name: 'Puzzle #76', color: 'crypto-purple' },
+  { bits: 77, name: 'Puzzle #77', color: 'crypto-red' },
+  { bits: 78, name: 'Puzzle #78', color: 'crypto-red' },
+  { bits: 79, name: 'Puzzle #79', color: 'crypto-red' },
+  { bits: 80, name: 'Puzzle #80', color: 'crypto-red' },
 ];
 
 const hardwarePresets = [
