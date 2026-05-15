@@ -42,6 +42,7 @@ import { UTASUae } from './UTASUae';
 import { UTASSupermatrix } from './UTASSupermatrix';
 import { UTASPipelineConnector } from './UTASPipelineConnector';
 import { NexusMathExplorer } from './NexusMathExplorer';
+import { ApexForensics } from './ApexForensics';
 import { LogisticMapSim, ShannonEntropySim, BirthdayAttackSim } from './InteractiveSimulations';
 import { type PersonalSignature as SignatureType } from '@/lib/time-machine-utils';
 
@@ -161,6 +162,9 @@ export function TimeMachine({ onBack }: TimeMachineProps) {
         <TabsContent value="crypto" className="mt-6 space-y-6">
           <MirrorMode>
             <SRILPipeline />
+            <div className="mt-6">
+              <ApexForensics />
+            </div>
             <div className="mt-6">
               <AutoPipelineConnector />
             </div>
