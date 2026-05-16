@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Sparkles, Loader2, Send, Brain } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Sparkles, Loader2, Send, Brain, Wallet } from 'lucide-react';
 import { evaluate } from 'mathjs';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -64,6 +64,50 @@ async function detectAndCompute(raw: string): Promise<{ kind: string; lines: Res
       } catch {}
     }
     return { kind: 'Bitcoin-Adresse', lines };
+  }
+
+  // Extended Key (xpub/xprv/ypub/zpub)
+  if (/^(xpub|xprv|ypub|yprv|zpub|zprv)[1-9A-HJ-NP-Za-km-z]{100,112}$/.test(input)) {
+    const kind = input.startsWith('xprv') || input.startsWith('yprv') || input.startsWith('zprv')
+      ? 'Extended PRIVATE Key' : 'Extended Public Key';
+    const lines: ResultLine[] = [
+      { label: 'Typ', value: kind },
+      { label: 'Prefix', value: input.slice(0, 4) },
+      { label: 'Standard', value: input.startsWith('x') ? 'BIP32 (P2PKH)' : input.startsWith('y') ? 'BIP49 (P2SH-Wrapped SegWit)' : 'BIP84 (Native SegWit)' },
+    ];
+    try {
+      const dec = base58Decode(input);
+      if (dec.length === 82) {
+        lines.push(
+          { label: 'Depth', value: String(dec[4]) },
+          { label: 'Fingerprint', value: bytesToHex(dec.slice(5, 9)), mono: true },
+          { label: 'Child Index', value: String(new DataView(dec.buffer, dec.byteOffset + 9, 4).getUint32(0)) },
+          { label: 'Chain Code', value: bytesToHex(dec.slice(13, 45)), mono: true },
+          { label: 'Key Material', value: bytesToHex(dec.slice(45, 78)), mono: true },
+        );
+      }
+    } catch {}
+    return { kind, lines };
+  }
+
+  // Base64 (likely signature / DER / certificate)
+  if (/^[A-Za-z0-9+/]{16,}={0,2}$/.test(input) && input.length % 4 === 0) {
+    try {
+      const bin = atob(input);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const lines: ResultLine[] = [
+        { label: 'Base64 → Bytes', value: String(bytes.length) },
+        { label: 'Hex', value: bytesToHex(bytes), mono: true },
+      ];
+      if (bytes[0] === 0x30) {
+        lines.push({ label: 'ASN.1/DER', value: `Sequence, Länge ${bytes[1]} Bytes` });
+        if (bytes.length >= 64 && bytes.length <= 72) {
+          lines.push({ label: 'Format', value: 'wahrscheinlich ECDSA-Signatur (r,s)' });
+        }
+      }
+      return { kind: 'Base64-Eingabe', lines };
+    } catch {}
   }
 
   // WIF detection
@@ -171,12 +215,36 @@ export function UniversalCalculator() {
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [error, setError] = useState('');
+  const [balance, setBalance] = useState<null | { sat: number; txs: number; lastSeen?: string }>(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Auto-fetch balance when the detected kind is an address
+  useEffect(() => {
+    if (!result || result.kind !== 'Bitcoin-Adresse') { setBalance(null); return; }
+    const addr = input.trim();
+    if (!addr) return;
+    setBalance(null);
+    setBalanceLoading(true);
+    fetch(`https://blockchain.info/rawaddr/${addr}?limit=3&cors=true`)
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('rate-limited')))
+      .then((j: { final_balance: number; n_tx: number; txs?: { time: number }[] }) => {
+        const last = j.txs?.[0]?.time;
+        setBalance({
+          sat: j.final_balance,
+          txs: j.n_tx,
+          lastSeen: last ? new Date(last * 1000).toISOString().slice(0, 10) : undefined,
+        });
+      })
+      .catch(() => setBalance(null))
+      .finally(() => setBalanceLoading(false));
+  }, [result, input]);
 
   async function handleCompute() {
     setError('');
     setResult(null);
     setAiAnswer('');
+    setBalance(null);
     if (!input.trim()) return;
     setLoading(true);
     try {
@@ -320,6 +388,28 @@ export function UniversalCalculator() {
                 </div>
               ))}
             </div>
+            {(balanceLoading || balance) && (
+              <div className="mt-2 pt-2 border-t border-crypto-gold/20">
+                <div className="text-[10px] uppercase tracking-widest text-crypto-blue mb-1 flex items-center gap-1">
+                  <Wallet className="w-3 h-3" /> Live-Blockchain
+                </div>
+                {balanceLoading && <div className="text-xs text-muted-foreground">Lade Balance …</div>}
+                {balance && (
+                  <div className="grid grid-cols-[160px_1fr] gap-2 text-xs">
+                    <div className="text-muted-foreground">Balance</div>
+                    <div className="font-mono text-crypto-gold">
+                      {(balance.sat / 1e8).toFixed(8)} BTC <span className="text-muted-foreground">({balance.sat.toLocaleString()} sat)</span>
+                    </div>
+                    <div className="text-muted-foreground">Transaktionen</div>
+                    <div className="font-mono text-crypto-green">{balance.txs.toLocaleString()}</div>
+                    {balance.lastSeen && (<>
+                      <div className="text-muted-foreground">Letzte Tx</div>
+                      <div className="font-mono">{balance.lastSeen}</div>
+                    </>)}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
