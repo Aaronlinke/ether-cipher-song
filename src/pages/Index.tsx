@@ -8,6 +8,7 @@ import { MatrixRain } from '@/components/MatrixRain';
 import { WifConverter } from '@/components/WifConverter';
 import { BruteForceCalculator } from '@/components/BruteForceCalculator';
 import { UniversalCalculator } from '@/components/UniversalCalculator';
+import { MegaSolver } from '@/components/MegaSolver';
 import { AddressGenerator } from '@/components/AddressGenerator';
 import { Bip39Generator } from '@/components/Bip39Generator';
 import { Bip39ToExtendedKey } from '@/components/Bip39ToExtendedKey';
@@ -72,6 +73,7 @@ const Index = () => {
 
               <div className="mb-8"><AlgorithmFlow /></div>
               <div className="mb-8"><UniversalCalculator /></div>
+              <div className="mb-8"><MegaSolver /></div>
               <div className="mb-8"><AddressGenerator /></div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <HashVisualizer />
