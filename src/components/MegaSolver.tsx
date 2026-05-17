@@ -224,30 +224,59 @@ export function MegaSolver() {
         </div>
 
         {results.length > 0 && (
-          <div className="border border-crypto-purple/30 bg-background/40 rounded p-3 space-y-1">
+          <div className="space-y-2">
             {results.map((r, i) => (
-              <div key={i} className="grid grid-cols-[180px_60px_80px_1fr] gap-2 text-xs items-baseline">
-                <div className="font-display text-crypto-purple uppercase tracking-wider">{r.name}</div>
-                <div className={
-                  r.status === 'hit' ? 'text-crypto-green' :
-                  r.status === 'miss' ? 'text-muted-foreground' :
-                  r.status === 'error' ? 'text-crypto-red' : 'text-crypto-orange'
-                }>
-                  {r.status === 'hit' ? '★ HIT' : r.status === 'miss' ? '— miss' : r.status === 'error' ? 'ERR' : '…'}
+              <div
+                key={i}
+                className="border border-crypto-purple/30 bg-background/40 rounded p-2.5 space-y-1.5"
+              >
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="font-display text-crypto-purple uppercase tracking-wider text-xs">
+                    {r.name}
+                  </div>
+                  <div className="flex items-center gap-2 text-[10px]">
+                    <span
+                      className={
+                        'px-1.5 py-0.5 rounded border ' +
+                        (r.status === 'hit'
+                          ? 'text-crypto-green border-crypto-green/40 bg-crypto-green/10'
+                          : r.status === 'miss'
+                          ? 'text-muted-foreground border-border/40'
+                          : r.status === 'error'
+                          ? 'text-crypto-red border-crypto-red/40 bg-crypto-red/10'
+                          : 'text-crypto-orange border-crypto-orange/40')
+                      }
+                    >
+                      {r.status === 'hit'
+                        ? '★ HIT'
+                        : r.status === 'miss'
+                        ? '— miss'
+                        : r.status === 'error'
+                        ? 'ERR'
+                        : '…'}
+                    </span>
+                    <span className="text-muted-foreground font-mono">{r.ms} ms</span>
+                  </div>
                 </div>
-                <div className="text-muted-foreground font-mono">{r.ms} ms</div>
-                <div className="font-mono break-all">{r.detail}</div>
+                <div className="font-mono text-xs break-all whitespace-pre-wrap text-foreground/90">
+                  {r.detail}
+                </div>
+                {r.highlight && (
+                  <div className="font-mono text-[10px] break-all text-crypto-gold/80">
+                    → {r.highlight}
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
 
         {aiSummary && (
-          <div className="border border-crypto-purple/30 bg-crypto-purple/5 rounded p-3">
+          <div className="border border-crypto-purple/30 bg-crypto-purple/5 rounded p-3 overflow-hidden">
             <div className="text-[10px] uppercase tracking-widest text-crypto-purple mb-2">
               KI-Synthese
             </div>
-            <div className="text-xs whitespace-pre-wrap text-foreground/90 leading-relaxed">
+            <div className="text-xs whitespace-pre-wrap break-words text-foreground/90 leading-relaxed">
               {aiSummary}
             </div>
           </div>
