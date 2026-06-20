@@ -60,26 +60,29 @@ interface SwarmMetrics {
 
 // ==================== BITCOIN PUZZLE TARGETS ====================
 
-const PUZZLE_TARGETS: { [key: number]: { address: string; minKey: bigint; maxKey: bigint; bits: number } } = {
-  66: {
-    address: '13zb1hQbWVsc2S7ZTZnP2G4undNNpdh5so',
-    minKey: BigInt('0x20000000000000000'),
-    maxKey: BigInt('0x3ffffffffffffffff'),
-    bits: 66
-  },
-  67: {
-    address: '1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9',
-    minKey: BigInt('0x40000000000000000'),
-    maxKey: BigInt('0x7ffffffffffffffff'),
-    bits: 67
-  },
-  68: {
-    address: '1MVDYgVaSN6iKKEsbzRUAYFrYJadLYZvvZ',
-    minKey: BigInt('0x80000000000000000'),
-    maxKey: BigInt('0xffffffffffffffffff'),
-    bits: 68
-  }
-};
+// Aktuell OFFENE Bitcoin-Puzzles (Stand 2026): #72 und höher.
+// Puzzles #1–#71 sind bereits gelöst (#71 zuletzt im April 2024).
+function puzzleRange(bits: number): { min: bigint; max: bigint } {
+  return { min: 1n << BigInt(bits - 1), max: (1n << BigInt(bits)) - 1n };
+}
+const OPEN_PUZZLE_LIST: { bits: number; address: string }[] = [
+  { bits: 72, address: '1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR' },
+  { bits: 73, address: '12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4' },
+  { bits: 74, address: '1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv' },
+  { bits: 75, address: '1J36UjUByGroXcCvmj13U6uwaVv9caEeAt' },
+  { bits: 76, address: '1DJh2eHFYQfACPmrvpyWc8MSTYKh7w9eRF' },
+  { bits: 77, address: '1Bxk4CQdqL9p22JEtDfdXMsng1XacifUtE' },
+  { bits: 78, address: '15qF6X51huDjqTmF9BJgxXdt1xcj46Jmhb' },
+  { bits: 79, address: '1ARk8HWJMn8js8tQmGUJeQHjSE7KRkn2t8' },
+  { bits: 80, address: '1BCf6rHUW6m3iH2ptsvnjgLruAiPQQepLe' },
+];
+const PUZZLE_TARGETS: { [key: number]: { address: string; minKey: bigint; maxKey: bigint; bits: number } } =
+  Object.fromEntries(
+    OPEN_PUZZLE_LIST.map(({ bits, address }) => {
+      const { min, max } = puzzleRange(bits);
+      return [bits, { address, minKey: min, maxKey: max, bits }];
+    })
+  );
 
 // ==================== SWARM CORE ENGINE ====================
 
