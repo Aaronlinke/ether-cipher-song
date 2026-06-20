@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ShieldCheck, Play, Download, Key, AlertTriangle, CheckCircle2, XCircle, HelpCircle, Wallet, Layers, Search, Loader2 } from 'lucide-react';
 import { getPublicKey } from '@noble/secp256k1';
-import { sha256 } from '@noble/hashes/sha2';
-import { ripemd160 } from '@noble/hashes/legacy';
+import { sha256 } from '@noble/hashes/sha256';
+import { ripemd160 } from '@noble/hashes/ripemd160';
 
 // ============ CryptoAxioms ============
 const AXIOMS = {
