@@ -25,6 +25,20 @@ interface ResultLine {
 
 const HEX_RE = /^[0-9a-fA-F]+$/;
 
+// Aktuell OFFENE Bitcoin-Puzzle (Puzzles #1–#71 sind bereits gelöst, #71 fiel im April 2024).
+// Wenn unser System einen Private Key für eine dieser Adressen findet → JACKPOT.
+const OPEN_PUZZLE_ADDRESSES: Record<string, number> = {
+  '1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR': 72,
+  '12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4': 73,
+  '1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv': 74,
+  '1J36UjUByGroXcCvmj13U6uwaVv9caEeAt': 75,
+  '1DJh2eHFYQfACPmrvpyWc8MSTYKh7w9eRF': 76,
+  '1Bxk4CQdqL9p22JEtDfdXMsng1XacifUtE': 77,
+  '15qF6X51huDjqTmF9BJgxXdt1xcj46Jmhb': 78,
+  '1ARk8HWJMn8js8tQmGUJeQHjSE7KRkn2t8': 79,
+  '1BCf6rHUW6m3iH2ptsvnjgLruAiPQQepLe': 80,
+};
+
 async function detectAndCompute(raw: string): Promise<{ kind: string; lines: ResultLine[] } | null> {
   const input = raw.trim();
   if (!input) return null;
@@ -44,7 +58,7 @@ async function detectAndCompute(raw: string): Promise<{ kind: string; lines: Res
           { label: 'Min (hex)', value: '0x' + min.toString(16), mono: true },
           { label: 'Max (hex)', value: '0x' + max.toString(16), mono: true },
           { label: 'Suchraum', value: span.toString() },
-          { label: 'Status', value: n <= 70 ? 'Bereits gelöst' : 'OFFEN — Ziel des Schwarms' },
+          { label: 'Status', value: n <= 71 ? 'Bereits gelöst (zuletzt #71, April 2024)' : 'OFFEN — Ziel des Schwarms (ab #72)' },
         ],
       };
     }
@@ -160,6 +174,14 @@ async function detectAndCompute(raw: string): Promise<{ kind: string; lines: Res
           { label: 'Adresse (unkomprimiert)', value: addrU, mono: true },
           { label: 'WIF', value: wif, mono: true },
         );
+        const hitC = OPEN_PUZZLE_ADDRESSES[addrC];
+        const hitU = OPEN_PUZZLE_ADDRESSES[addrU];
+        if (hitC || hitU) {
+          lines.push({
+            label: '🏆 JACKPOT',
+            value: `Adresse entspricht OFFENEM Bitcoin-Puzzle #${hitC ?? hitU} — Schlüssel sofort sichern!`,
+          });
+        }
         return { kind: '32-Byte Hex → Private Key', lines };
       } catch {}
     }
@@ -332,7 +354,7 @@ export function UniversalCalculator() {
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="z.B.  sin(pi/4)^2 + cos(pi/4)^2   ·   0xdeadbeef   ·   1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa   ·   puzzle 71   ·   Was ist die Lyapunov-Exponent des Lorenz-Systems?"
+          placeholder="z.B.  sin(pi/4)^2 + cos(pi/4)^2   ·   0xdeadbeef   ·   1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa   ·   puzzle 72   ·   Was ist die Lyapunov-Exponent des Lorenz-Systems?"
           rows={4}
           className="font-mono text-sm bg-background/50 border-crypto-gold/30 focus:border-crypto-gold/60"
           onKeyDown={(e) => {

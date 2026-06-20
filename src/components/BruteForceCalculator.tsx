@@ -5,9 +5,9 @@ import { privateKeyToAddress, bytesToHex, generateRandomBytes } from '@/lib/cryp
 import { toast } from 'sonner';
 
 // AKTUELL UNGELÖSTE Bitcoin-Puzzle-Adressen (Stand 2026)
-// Alle Puzzles unter #71 sind bereits gelöst — wir jagen nur noch die offenen.
+// Alle Puzzles bis einschließlich #71 sind gelöst (#71 fiel im April 2024).
+// Wir jagen nur noch die offenen — ab #72.
 const PUZZLE_TARGETS: Record<number, string> = {
-  71: '1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU',
   72: '1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR',
   73: '12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4',
   74: '1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv',
@@ -20,8 +20,7 @@ const PUZZLE_TARGETS: Record<number, string> = {
 };
 
 const presets = [
-  { bits: 71, name: 'Puzzle #71 ⚡', color: 'crypto-orange' },
-  { bits: 72, name: 'Puzzle #72', color: 'crypto-orange' },
+  { bits: 72, name: 'Puzzle #72 ⚡', color: 'crypto-orange' },
   { bits: 73, name: 'Puzzle #73', color: 'crypto-orange' },
   { bits: 74, name: 'Puzzle #74', color: 'crypto-purple' },
   { bits: 75, name: 'Puzzle #75', color: 'crypto-purple' },
