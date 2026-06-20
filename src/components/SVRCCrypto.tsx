@@ -457,8 +457,8 @@ export function SVRCCrypto() {
                   <span className={s.sats && s.sats > 0 ? 'text-crypto-gold font-bold' : 'text-muted-foreground'}>
                     {s.sats === undefined ? '—' : (s.sats / 1e8).toFixed(8)}
                   </span>
-                </>
-              )}
+                </div>
+              ))}
             </div>
           )}
         </div>
