@@ -446,7 +446,7 @@ export function SwarmKeyHunter() {
   const animationRef = useRef<number>();
   
   const [isRunning, setIsRunning] = useState(false);
-  const [selectedPuzzle, setSelectedPuzzle] = useState(66);
+  const [selectedPuzzle, setSelectedPuzzle] = useState(72);
   const [numAgents, setNumAgents] = useState([100]);
   const [speed, setSpeed] = useState([50]);
   
