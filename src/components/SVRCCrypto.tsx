@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { ShieldCheck, Play, Download, Key, AlertTriangle, CheckCircle2, XCircle, HelpCircle } from 'lucide-react';
+import { ShieldCheck, Play, Download, Key, AlertTriangle, CheckCircle2, XCircle, HelpCircle, Wallet, Layers, Search, Loader2 } from 'lucide-react';
 import { getPublicKey } from '@noble/secp256k1';
 import { sha256 } from '@noble/hashes/sha2';
 import { ripemd160 } from '@noble/hashes/legacy';
@@ -248,6 +248,17 @@ export function SVRCCrypto() {
   const [results, setResults] = useState<EvalResult[]>([]);
   const [privHex, setPrivHex] = useState('0000000000000000000000000000000000000000000000000000000000000001');
   const [forgeOut, setForgeOut] = useState<{ address: string; pubkey: string; error?: string } | null>(null);
+  const [balance, setBalance] = useState<{ loading: boolean; sats?: number; txs?: number; error?: string } | null>(null);
+
+  // Batch forge
+  const [batchInput, setBatchInput] = useState('1\n2\n3\nabc\ndeadbeef');
+  const [batchOut, setBatchOut] = useState<Array<{ key: string; address: string; error?: string }>>([]);
+
+  // Puzzle scan
+  const [scanStart, setScanStart] = useState('1');
+  const [scanCount, setScanCount] = useState(16);
+  const [scanRunning, setScanRunning] = useState(false);
+  const [scanOut, setScanOut] = useState<Array<{ key: string; address: string; sats?: number }>>([]);
 
   const run = () => {
     const lines = input.split('\n').map(l => l.trim()).filter(Boolean);
@@ -255,8 +266,75 @@ export function SVRCCrypto() {
   };
 
   const forge = () => {
-    try { setForgeOut(privToAddr(privHex)); }
+    try { setForgeOut(privToAddr(privHex)); setBalance(null); }
     catch (e) { setForgeOut({ address: '', pubkey: '', error: (e as Error).message }); }
+  };
+
+  const checkBalance = async (addr: string) => {
+    setBalance({ loading: true });
+    try {
+      const r = await fetch(`https://blockstream.info/api/address/${addr}`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const j = await r.json();
+      const sats = (j.chain_stats?.funded_txo_sum ?? 0) - (j.chain_stats?.spent_txo_sum ?? 0);
+      const txs = (j.chain_stats?.tx_count ?? 0);
+      setBalance({ loading: false, sats, txs });
+    } catch (e) {
+      setBalance({ loading: false, error: (e as Error).message });
+    }
+  };
+
+  const runBatch = () => {
+    const lines = batchInput.split('\n').map(l => l.trim()).filter(Boolean);
+    const out = lines.map(k => {
+      try {
+        // Accept decimal or hex
+        let hex = k;
+        if (/^\d+$/.test(k)) hex = BigInt(k).toString(16);
+        const r = privToAddr(hex);
+        return { key: hex.padStart(64, '0'), address: r.address };
+      } catch (e) {
+        return { key: k, address: '', error: (e as Error).message };
+      }
+    });
+    setBatchOut(out);
+  };
+
+  const runPuzzleScan = async () => {
+    setScanRunning(true);
+    setScanOut([]);
+    const out: Array<{ key: string; address: string; sats?: number }> = [];
+    let start: bigint;
+    try {
+      start = scanStart.startsWith('0x') ? BigInt(scanStart) :
+              /^\d+$/.test(scanStart) ? BigInt(scanStart) :
+              BigInt('0x' + scanStart);
+    } catch {
+      setScanRunning(false);
+      return;
+    }
+    const n = Math.min(scanCount, 64);
+    for (let i = 0; i < n; i++) {
+      const k = (start + BigInt(i)).toString(16);
+      try {
+        const { address } = privToAddr(k);
+        out.push({ key: k.padStart(64, '0'), address });
+      } catch {}
+      setScanOut([...out]);
+    }
+    // Optional: check balances (rate-limited, only first 10)
+    for (let i = 0; i < Math.min(out.length, 10); i++) {
+      try {
+        const r = await fetch(`https://blockstream.info/api/address/${out[i].address}`);
+        if (r.ok) {
+          const j = await r.json();
+          out[i].sats = (j.chain_stats?.funded_txo_sum ?? 0) - (j.chain_stats?.spent_txo_sum ?? 0);
+          setScanOut([...out]);
+        }
+      } catch {}
+      await new Promise(res => setTimeout(res, 150));
+    }
+    setScanRunning(false);
   };
 
   const exportJSON = () => {
@@ -306,6 +384,79 @@ export function SVRCCrypto() {
                 <>
                   <div><span className="text-muted-foreground">pubkey: </span><span className="text-crypto-blue">{forgeOut.pubkey}</span></div>
                   <div><span className="text-muted-foreground">address: </span><span className="text-crypto-green">{forgeOut.address}</span></div>
+                  <div className="flex items-center gap-2 pt-1">
+                    <Button onClick={() => checkBalance(forgeOut.address)} size="sm"
+                      className="h-6 text-[10px] bg-crypto-green/20 text-crypto-green border border-crypto-green/50 hover:bg-crypto-green/30">
+                      <Wallet className="w-3 h-3 mr-1" /> Live-Balance prüfen
+                    </Button>
+                    {balance?.loading && <Loader2 className="w-3 h-3 animate-spin text-crypto-green" />}
+                    {balance && !balance.loading && !balance.error && (
+                      <span className="text-crypto-green">
+                        {(balance.sats! / 1e8).toFixed(8)} BTC · {balance.txs} tx
+                      </span>
+                    )}
+                    {balance?.error && <span className="text-destructive">{balance.error}</span>}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Batch Forge */}
+        <div className="border border-crypto-blue/30 bg-background/40 rounded p-3 space-y-2">
+          <div className="flex items-center gap-2 text-xs font-bold text-crypto-blue">
+            <Layers className="w-4 h-4" /> Batch-Forge — Mehrere Keys (dezimal oder hex)
+          </div>
+          <Textarea value={batchInput} onChange={e => setBatchInput(e.target.value)} rows={4}
+            className="font-mono text-[11px] bg-background/60" placeholder="Ein Key pro Zeile" />
+          <Button onClick={runBatch} size="sm"
+            className="bg-crypto-blue/20 text-crypto-blue border border-crypto-blue/50 hover:bg-crypto-blue/30">
+            <Play className="w-3 h-3 mr-1" /> Batch ausführen
+          </Button>
+          {batchOut.length > 0 && (
+            <div className="text-[10px] font-mono space-y-1 max-h-48 overflow-auto">
+              {batchOut.map((b, i) => (
+                <div key={i} className="grid grid-cols-[auto_1fr] gap-2 border-b border-border/20 py-0.5">
+                  <span className="text-crypto-purple">#{i}</span>
+                  {b.error ? <span className="text-destructive break-all">{b.key}: {b.error}</span> :
+                    <span className="break-all">
+                      <span className="text-muted-foreground">{b.key.slice(0, 12)}…</span>
+                      {' → '}
+                      <span className="text-crypto-green">{b.address}</span>
+                    </span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Puzzle Scan */}
+        <div className="border border-crypto-red/30 bg-background/40 rounded p-3 space-y-2">
+          <div className="flex items-center gap-2 text-xs font-bold text-crypto-red">
+            <Search className="w-4 h-4" /> Puzzle-Scan — sequentielle Key-Range (mit Balance der ersten 10)
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Input value={scanStart} onChange={e => setScanStart(e.target.value)}
+              className="font-mono text-xs bg-background/60 flex-1" placeholder="Start (dezimal oder hex)" />
+            <Input type="number" value={scanCount} min={1} max={64}
+              onChange={e => setScanCount(parseInt(e.target.value) || 1)}
+              className="font-mono text-xs bg-background/60 sm:w-24" />
+            <Button onClick={runPuzzleScan} disabled={scanRunning} size="sm"
+              className="bg-crypto-red/20 text-crypto-red border border-crypto-red/50 hover:bg-crypto-red/30">
+              {scanRunning ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Play className="w-3 h-3 mr-1" />}
+              Scan
+            </Button>
+          </div>
+          {scanOut.length > 0 && (
+            <div className="text-[10px] font-mono space-y-1 max-h-60 overflow-auto">
+              {scanOut.map((s, i) => (
+                <div key={i} className="grid grid-cols-[auto_1fr_auto] gap-2 items-center border-b border-border/20 py-0.5">
+                  <span className="text-crypto-purple">k={s.key.replace(/^0+/, '') || '0'}</span>
+                  <span className="text-crypto-green break-all">{s.address}</span>
+                  <span className={s.sats && s.sats > 0 ? 'text-crypto-gold font-bold' : 'text-muted-foreground'}>
+                    {s.sats === undefined ? '—' : (s.sats / 1e8).toFixed(8)}
+                  </span>
                 </>
               )}
             </div>
