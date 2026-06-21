@@ -1,8 +1,9 @@
 import { useState, useRef, useMemo } from 'react';
 import JSZip from 'jszip';
+import * as Babel from '@babel/standalone';
 import { CryptoPanel } from './CryptoPanel';
 import { Button } from '@/components/ui/button';
-import { Upload, Play, FileCode, Folder, Package, AlertTriangle, Terminal, X } from 'lucide-react';
+import { Upload, Play, FileCode, Folder, Package, AlertTriangle, Terminal, X, Wand2 } from 'lucide-react';
 
 type EntryKind = 'html' | 'js' | 'python' | 'php' | 'binary' | 'unknown';
 
@@ -18,6 +19,56 @@ interface ExtractedFile {
 
 const TEXT_EXT = /\.(html?|css|js|mjs|cjs|ts|tsx|jsx|json|txt|md|py|php|xml|svg|csv|yml|yaml|toml|ini|sh|bat)$/i;
 const BINARY_EXT = /\.(exe|apk|jar|dll|so|dylib|bin|wasm)$/i;
+
+/** Auto-repair common JS/TS syntax problems before running */
+function sanitizeJs(src: string): { code: string; fixes: string[] } {
+  const fixes: string[] = [];
+  let s = src;
+  // strip BOM
+  if (s.charCodeAt(0) === 0xFEFF) { s = s.slice(1); fixes.push('BOM entfernt'); }
+  // smart quotes → straight
+  if (/[“”‘’]/.test(s)) { s = s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'"); fixes.push('Smart-Quotes ersetzt'); }
+  // CRLF → LF
+  if (s.includes('\r\n')) { s = s.replace(/\r\n/g, '\n'); fixes.push('CRLF → LF'); }
+  // remove ES module imports/exports (we run flat in a script tag)
+  if (/^\s*(import|export)\b/m.test(s)) {
+    s = s.replace(/^\s*import\s+[^;]+;?\s*$/gm, '// [removed import]')
+         .replace(/^\s*export\s+(default\s+)?/gm, '');
+    fixes.push('ES-Module-Syntax neutralisiert');
+  }
+  return { code: s, fixes };
+}
+
+/** Auto-repair common Python issues */
+function sanitizePy(src: string): { code: string; fixes: string[] } {
+  const fixes: string[] = [];
+  let s = src;
+  if (s.charCodeAt(0) === 0xFEFF) { s = s.slice(1); fixes.push('BOM entfernt'); }
+  if (s.includes('\r\n')) { s = s.replace(/\r\n/g, '\n'); fixes.push('CRLF → LF'); }
+  // tabs → 4 spaces (Pyodide is strict)
+  if (/\t/.test(s)) { s = s.replace(/\t/g, '    '); fixes.push('Tabs → Spaces'); }
+  // Python2 print → print()
+  s = s.replace(/^(\s*)print\s+([^(].*)$/gm, (_m, ind, rest) => { fixes.push('print → print()'); return `${ind}print(${rest})`; });
+  return { code: s, fixes };
+}
+
+/** Transpile TS/JSX/modern JS to runnable browser JS via Babel */
+function transpile(src: string, filename: string): { code: string; fixes: string[] } {
+  const fixes: string[] = [];
+  const isTs = /\.tsx?$/i.test(filename);
+  const isJsx = /\.[jt]sx$/i.test(filename);
+  try {
+    const presets: any[] = [['env', { targets: { esmodules: true } }]];
+    if (isJsx) presets.push('react');
+    if (isTs) presets.push('typescript');
+    const out = Babel.transform(src, { filename, presets, sourceType: 'script' as any });
+    fixes.push(`Babel: ${presets.map(p => Array.isArray(p) ? p[0] : p).join('+')}`);
+    return { code: out.code || src, fixes };
+  } catch (e: any) {
+    fixes.push(`Babel-Fehler: ${e.message?.split('\n')[0] || e}`);
+    return { code: src, fixes };
+  }
+}
 
 function detectEntry(files: ExtractedFile[]): { kind: EntryKind; entry?: ExtractedFile } {
   const byName = (n: string) =>
@@ -68,7 +119,9 @@ function rewriteHtml(html: string, entry: ExtractedFile, files: ExtractedFile[])
 function buildHtmlShellFromJs(js: string): string {
   return `<!doctype html><html><head><meta charset="utf-8"><title>JS Runner</title>
 <style>body{font-family:ui-monospace,monospace;background:#0a0a0a;color:#0f0;padding:1rem}</style>
-</head><body><div id="app"></div>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+</head><body><div id="root"></div><div id="app"></div>
 <script>
 (function(){
   const log = (...a)=>{ const d=document.createElement('div'); d.textContent=a.map(x=>typeof x==='object'?JSON.stringify(x):String(x)).join(' '); document.body.appendChild(d); parent.postMessage({type:'log',data:a.map(String).join(' ')},'*'); };
@@ -111,6 +164,8 @@ export function ZipRunner() {
   const [iframeSrc, setIframeSrc] = useState<string>('');
   const [logs, setLogs] = useState<string[]>([]);
   const [selected, setSelected] = useState<ExtractedFile | null>(null);
+  const [autoFix, setAutoFix] = useState(true);
+  const [fixLog, setFixLog] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
@@ -145,11 +200,25 @@ export function ZipRunner() {
 
   const run = () => {
     if (!entry) return;
-    setLogs([]); setRunning(true);
+    setLogs([]); setFixLog([]); setRunning(true);
+    const allFixes: string[] = [];
     let html = '';
-    if (kind === 'html' && entry.text) html = rewriteHtml(entry.text, entry, files);
-    else if (kind === 'js' && entry.text) html = buildHtmlShellFromJs(entry.text);
-    else if (kind === 'python' && entry.text) html = buildPythonShell(entry.text);
+    if (kind === 'html' && entry.text) {
+      html = rewriteHtml(entry.text, entry, files);
+    } else if (kind === 'js' && entry.text) {
+      let code = entry.text;
+      if (autoFix) {
+        const s = sanitizeJs(code); code = s.code; allFixes.push(...s.fixes);
+      }
+      if (autoFix || /\.(tsx?|jsx)$/i.test(entry.name)) {
+        const t = transpile(code, entry.name); code = t.code; allFixes.push(...t.fixes);
+      }
+      html = buildHtmlShellFromJs(code);
+    } else if (kind === 'python' && entry.text) {
+      let code = entry.text;
+      if (autoFix) { const s = sanitizePy(code); code = s.code; allFixes.push(...s.fixes); }
+      html = buildPythonShell(code);
+    }
     else if (kind === 'php') {
       setError('PHP benötigt einen Server. Nur Quelltext-Anzeige möglich.');
       setRunning(false); return;
@@ -160,6 +229,7 @@ export function ZipRunner() {
       setError('Kein ausführbarer Einstiegspunkt gefunden.');
       setRunning(false); return;
     }
+    setFixLog(allFixes);
     const blob = new Blob([html], { type: 'text/html' });
     setIframeSrc(URL.createObjectURL(blob));
   };
@@ -251,9 +321,20 @@ export function ZipRunner() {
               <div className="bg-background/40 border border-border/30 rounded p-3 text-xs space-y-1">
                 <div>Typ: <span className="text-crypto-gold uppercase">{kind}</span></div>
                 <div>Einstieg: <span className="font-mono text-crypto-green">{entry?.path || '—'}</span></div>
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input type="checkbox" checked={autoFix} onChange={e => setAutoFix(e.target.checked)} />
+                  <Wand2 size={12} className="text-crypto-gold" />
+                  Auto-Fix &amp; Transpile (TS/JSX → JS, Syntax-Reparatur)
+                </label>
                 <Button size="sm" onClick={run} disabled={!entry || kind === 'binary' || kind === 'php'} className="mt-2 bg-crypto-green/20 text-crypto-green border border-crypto-green/50 hover:bg-crypto-green/30">
                   <Play className="w-3 h-3 mr-1" /> Ausführen
                 </Button>
+                {fixLog.length > 0 && (
+                  <div className="mt-2 text-[10px] text-crypto-gold/80">
+                    <div className="uppercase tracking-wider">Auto-Fix Log:</div>
+                    {fixLog.map((f,i) => <div key={i}>• {f}</div>)}
+                  </div>
+                )}
               </div>
 
               {running && iframeSrc && (
