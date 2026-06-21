@@ -12,6 +12,7 @@ import { MegaSolver } from '@/components/MegaSolver';
 import { ManifestationEngine } from '@/components/ManifestationEngine';
 import { SVRCCrypto } from '@/components/SVRCCrypto';
 import { CryptoChallenges } from '@/components/CryptoChallenges';
+import { ZipRunner } from '@/components/ZipRunner';
 import { AddressGenerator } from '@/components/AddressGenerator';
 import { Bip39Generator } from '@/components/Bip39Generator';
 import { Bip39ToExtendedKey } from '@/components/Bip39ToExtendedKey';
@@ -80,6 +81,7 @@ const Index = () => {
               <div className="mb-8"><ManifestationEngine /></div>
               <div className="mb-8"><SVRCCrypto /></div>
               <div className="mb-8"><CryptoChallenges /></div>
+              <div className="mb-8"><ZipRunner /></div>
               <div className="mb-8"><AddressGenerator /></div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <HashVisualizer />
