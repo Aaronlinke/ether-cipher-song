@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@babel/standalone": "^8.0.2",
     "@hookform/resolvers": "^3.10.0",
     "@noble/hashes": "^2.2.0",
     "@noble/secp256k1": "^3.1.0",
@@ -73,6 +74,7 @@
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@types/babel__standalone": "^7.1.9",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
