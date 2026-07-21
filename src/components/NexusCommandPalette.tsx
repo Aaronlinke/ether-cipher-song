@@ -72,7 +72,7 @@ export function NexusCommandPalette({
       </button>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Modul suchen — „miner", „puzzle", „hash"..." />
+        <CommandInput placeholder='Modul suchen — "miner", "puzzle", "hash"...' />
         <CommandList>
           <CommandEmpty>Nichts gefunden.</CommandEmpty>
           {groups.map((g, i) => (
