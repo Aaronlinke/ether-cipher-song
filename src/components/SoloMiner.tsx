@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Pickaxe, Play, Square, RefreshCw, Trophy } from 'lucide-react';
+import { Pickaxe, Play, Square, RefreshCw, Trophy, AlertTriangle, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CryptoPanel } from './CryptoPanel';
 
@@ -84,6 +84,8 @@ export function SoloMiner() {
   const [best, setBest] = useState<{ diff: number; hash: string; nonce: number } | null>(null);
   const [nonce, setNonce] = useState(0);
   const [err, setErr] = useState<string>('');
+  const [payout, setPayout] = useState<string>(() => localStorage.getItem('solo_payout') || '');
+  const [reward, setReward] = useState<number | null>(null);
   const workerRef = useRef<Worker | null>(null);
   const lastTick = useRef<number>(0);
   const acc = useRef<number>(0);
@@ -98,6 +100,10 @@ export function SoloMiner() {
         previousblockhash: b.previousblockhash, merkle_root: b.merkle_root,
         timestamp: b.timestamp, bits: b.bits, nonce: b.nonce,
       });
+      // Block-Reward des nächsten Blocks (Halvings alle 210 000)
+      const nextH = (b.height || 0) + 1;
+      const halvings = Math.floor(nextH / 210000);
+      setReward(halvings >= 64 ? 0 : 50 / Math.pow(2, halvings));
     } catch (e) { setErr(String(e)); }
   };
 
@@ -144,11 +150,41 @@ export function SoloMiner() {
       glowColor="gold"
     >
       <div className="space-y-3">
-        <p className="text-xs text-muted-foreground">
-          Lädt den aktuellen Bitcoin-Blockheader von <span className="text-crypto-gold">mempool.space</span> und
-          sucht in einem Web-Worker nach Nonces mit möglichst niedrigem SHA-256d. Reine Lotterie —
-          aber jeder Hash ist real.
-        </p>
+        {/* Ehrlicher Reality-Check */}
+        <div className="border border-crypto-red/40 bg-crypto-red/5 rounded p-2.5 text-xs space-y-1">
+          <div className="flex items-center gap-1.5 text-crypto-red font-bold uppercase tracking-widest text-[10px]">
+            <AlertTriangle className="w-3 h-3" /> Reality-Check
+          </div>
+          <p className="text-muted-foreground leading-relaxed">
+            Dieser Miner hashed <b className="text-crypto-gold">echt</b>, ist aber <b>nicht</b> mit einem
+            Stratum-Pool verbunden. Um einen gefundenen Block an dein Wallet auszahlen zu können,
+            müsste die Coinbase-Transaktion <b>deine</b> Payout-Adresse enthalten
+            und der Header via <span className="text-crypto-gold">solo.ckpool.org</span> submitted werden.
+            Dafür brauchen wir eine Edge-Function als TCP-Bridge (Browser können kein Stratum sprechen).
+            <br />
+            <span className="text-crypto-gold">→ Sag „Bridge bauen"</span> und ich lege die Function an.
+            Bis dahin: <b>Lottery-Simulation</b> — bestätigt jeden echten Hash, aber submitted nichts.
+          </p>
+        </div>
+
+        {/* Payout Wallet */}
+        <div className="space-y-1">
+          <label className="text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-1">
+            <Wallet className="w-3 h-3" /> Payout-Adresse (für spätere Stratum-Bridge)
+          </label>
+          <input
+            value={payout}
+            onChange={(e) => { setPayout(e.target.value); localStorage.setItem('solo_payout', e.target.value); }}
+            placeholder="bc1q... oder 1..."
+            className="w-full bg-background/40 border border-crypto-gold/30 rounded px-2 py-1.5 font-mono text-xs text-crypto-gold focus:outline-none focus:border-crypto-gold/70"
+          />
+          {reward !== null && (
+            <div className="text-[10px] text-muted-foreground">
+              Theoretischer Block-Reward: <span className="text-crypto-gold">{reward} BTC</span>
+              {' '}+ Fees {payout ? '→ deine Adresse' : '(keine Adresse gesetzt)'}
+            </div>
+          )}
+        </div>
 
         {err && <div className="text-xs text-crypto-red">{err}</div>}
 
