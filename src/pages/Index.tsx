@@ -20,6 +20,7 @@ import { Bip39ToExtendedKey } from '@/components/Bip39ToExtendedKey';
 import { WifBalanceChecker } from '@/components/WifBalanceChecker';
 import { TimeMachine } from '@/components/TimeMachine';
 import { LegalDisclaimer } from '@/components/LegalDisclaimer';
+import { NexusCommandPalette } from '@/components/NexusCommandPalette';
 import { Button } from '@/components/ui/button';
 import { Clock, Binary } from 'lucide-react';
 
@@ -77,24 +78,24 @@ const Index = () => {
               </div>
 
               <div className="mb-8"><AlgorithmFlow /></div>
-              <div className="mb-8"><UniversalCalculator /></div>
-              <div className="mb-8"><MegaSolver /></div>
-              <div className="mb-8"><ManifestationEngine /></div>
-              <div className="mb-8"><SVRCCrypto /></div>
-              <div className="mb-8"><CryptoChallenges /></div>
-              <div className="mb-8"><ZipRunner /></div>
-              <div className="mb-8"><SoloMiner /></div>
-              <div className="mb-8"><AddressGenerator /></div>
+              <div className="mb-8" data-mod="universal"><UniversalCalculator /></div>
+              <div className="mb-8" data-mod="mega"><MegaSolver /></div>
+              <div className="mb-8" data-mod="manifest"><ManifestationEngine /></div>
+              <div className="mb-8" data-mod="svrc"><SVRCCrypto /></div>
+              <div className="mb-8" data-mod="chall"><CryptoChallenges /></div>
+              <div className="mb-8" data-mod="zip"><ZipRunner /></div>
+              <div className="mb-8" data-mod="solo"><SoloMiner /></div>
+              <div className="mb-8" data-mod="addr"><AddressGenerator /></div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <HashVisualizer />
+                <div data-mod="hash" className="contents"><HashVisualizer /></div>
                 <Base58Converter />
                 <EntropyMeter />
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8" data-mod="wif">
                 <WifConverter />
-                <BruteForceCalculator />
+                <div data-mod="brute" className="contents"><BruteForceCalculator /></div>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8" data-mod="bip39">
                 <Bip39Generator />
                 <WifBalanceChecker />
               </div>
@@ -120,6 +121,8 @@ const Index = () => {
             </p>
           </div>
         </footer>
+
+        <NexusCommandPalette onSwitchView={setActiveView} />
       </div>
     </div>
   );
