@@ -4,6 +4,7 @@ import { Calculator, Clock, Cpu, Zap, Play, Square, Target, Trophy, Activity } f
 import { privateKeyToAddress, bytesToHex, generateRandomBytes } from '@/lib/crypto-utils';
 import { toast } from 'sonner';
 import { saveHit } from '@/lib/hit-vault';
+import { emit, usePipelineTarget } from '@/lib/pipeline-bus';
 
 // AKTUELL UNGELÖSTE Bitcoin-Puzzle-Adressen (Stand 2026)
 // Alle Puzzles bis einschließlich #71 sind gelöst (#71 fiel im April 2024).
@@ -98,6 +99,19 @@ export function BruteForceCalculator() {
   const [found, setFound] = useState<{ key: string; addr: string } | null>(null);
   const [customTarget, setCustomTarget] = useState('');
   const huntingRef = useRef(false);
+
+  // Pipeline: accept incoming payloads → set bits (puzzle number) or address as custom target
+  usePipelineTarget('bruteforce', (p) => {
+    if (p.kind === 'address') {
+      setCustomTarget(p.value);
+      toast.info(`Ziel-Adresse übernommen: ${p.value.slice(0, 12)}…`);
+    } else if (p.kind === 'number') {
+      const n = parseInt(p.value, 10);
+      if (n >= 20 && n <= 160) { setBits(n); toast.info(`Bits gesetzt: ${n}`); }
+    } else if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(p.value.trim())) {
+      setCustomTarget(p.value.trim());
+    }
+  });
   const triesRef = useRef(0);
   const lastTickRef = useRef(Date.now());
   const tickCountRef = useRef(0);
@@ -269,6 +283,8 @@ export function BruteForceCalculator() {
               target_address: PUZZLE_TARGETS[bits] ?? (customTarget.trim() || null),
               note: `7-Bot-Swarm Treffer bei ${triesRef.current.toLocaleString()} Versuchen`,
             }).catch((e) => toast.error('Vault-Sync fehlgeschlagen: ' + e.message));
+            emit({ kind: 'key', value: k, source: `BruteForce:${bot}→HIT`, target: 'any',
+                   meta: { address: addr, bits, puzzle: PUZZLE_TARGETS[bits] === addr ? bits : null } });
             return;
           }
         } catch (e) {
