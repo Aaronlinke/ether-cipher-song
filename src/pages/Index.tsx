@@ -21,6 +21,7 @@ import { WifBalanceChecker } from '@/components/WifBalanceChecker';
 import { TimeMachine } from '@/components/TimeMachine';
 import { LegalDisclaimer } from '@/components/LegalDisclaimer';
 import { NexusCommandPalette } from '@/components/NexusCommandPalette';
+import { HitVault } from '@/components/HitVault';
 import { Button } from '@/components/ui/button';
 import { Clock, Binary } from 'lucide-react';
 
@@ -100,6 +101,7 @@ const Index = () => {
                 <WifBalanceChecker />
               </div>
               <div className="mb-8"><Bip39ToExtendedKey /></div>
+              <div className="mb-8" data-mod="vault"><HitVault /></div>
 
               <div className="mt-12 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-crypto-gold/20 bg-card/50 backdrop-blur-sm">
