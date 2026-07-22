@@ -266,7 +266,7 @@ export function BruteForceCalculator() {
               puzzle: PUZZLE_TARGETS[bits] === addr ? bits : null,
               private_key: k,
               address: addr,
-              target_address: PUZZLE_TARGETS[bits] ?? customTarget.trim() || null,
+              target_address: PUZZLE_TARGETS[bits] ?? (customTarget.trim() || null),
               note: `7-Bot-Swarm Treffer bei ${triesRef.current.toLocaleString()} Versuchen`,
             }).catch((e) => toast.error('Vault-Sync fehlgeschlagen: ' + e.message));
             return;
