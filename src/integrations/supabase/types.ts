@@ -50,6 +50,51 @@ export type Database = {
         }
         Relationships: []
       }
+      hits: {
+        Row: {
+          address: string
+          balance_sats: number | null
+          bits: number | null
+          bot: string | null
+          created_at: string
+          id: string
+          meta: Json | null
+          note: string | null
+          private_key: string
+          puzzle: number | null
+          source: string
+          target_address: string | null
+        }
+        Insert: {
+          address: string
+          balance_sats?: number | null
+          bits?: number | null
+          bot?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          note?: string | null
+          private_key: string
+          puzzle?: number | null
+          source: string
+          target_address?: string | null
+        }
+        Update: {
+          address?: string
+          balance_sats?: number | null
+          bits?: number | null
+          bot?: string | null
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          note?: string | null
+          private_key?: string
+          puzzle?: number | null
+          source?: string
+          target_address?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
