@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { CryptoPanel } from './CryptoPanel';
 import { Database, Copy, ExternalLink, Trash2 } from 'lucide-react';
 import { listHits, subscribeHits, type Hit } from '@/lib/hit-vault';
+import { emit } from '@/lib/pipeline-bus';
+import { Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function HitVault() {
@@ -91,6 +93,13 @@ export function HitVault() {
                   <button onClick={() => copy(h.address)} className="ml-auto shrink-0 opacity-60 hover:opacity-100">
                     <Copy className="w-3 h-3" />
                   </button>
+                  <button
+                    onClick={() => emit({ kind: 'address', value: h.address, source: 'Vault', target: 'universal' })}
+                    className="shrink-0 opacity-60 hover:opacity-100"
+                    title="An Pipeline senden"
+                  >
+                    <Send className="w-3 h-3" />
+                  </button>
                   <a
                     href={`https://mempool.space/address/${h.address}`}
                     target="_blank" rel="noreferrer"
@@ -104,6 +113,13 @@ export function HitVault() {
                   <span className="text-crypto-green break-all">{h.private_key}</span>
                   <button onClick={() => copy(h.private_key)} className="ml-auto shrink-0 opacity-60 hover:opacity-100">
                     <Copy className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => emit({ kind: 'key', value: h.private_key, source: 'Vault', target: 'universal' })}
+                    className="shrink-0 opacity-60 hover:opacity-100"
+                    title="An Pipeline senden"
+                  >
+                    <Send className="w-3 h-3" />
                   </button>
                 </div>
                 {h.target_address && (
