@@ -5,7 +5,7 @@ import {
 } from '@/components/ui/command';
 import {
   Binary, Clock, Calculator, Pickaxe, Zap, Archive, Sparkles,
-  Shield, Search, Hash, KeyRound, Cpu, Radar, Command,
+  Shield, Search, Hash, KeyRound, Cpu, Radar, Command, Database,
 } from 'lucide-react';
 
 type Cmd = {
@@ -55,6 +55,7 @@ export function NexusCommandPalette({
     { id: 'hash', label: 'Hash-Visualizer', icon: Hash, group: 'Tools', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="hash"]'), 100); } },
     { id: 'bip39', label: 'BIP-39 Generator + xKey', icon: KeyRound, group: 'Tools', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="bip39"]'), 100); } },
     { id: 'wif', label: 'WIF-Konverter + Balance', icon: Cpu, group: 'Tools', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="wif"]'), 100); } },
+    { id: 'vault', label: 'Hit-Vault', hint: 'Persistente Fund-DB, live-sync', icon: Database, group: 'Tools', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="vault"]'), 100); } },
   ];
 
   const groups = Array.from(new Set(cmds.map(c => c.group)));
