@@ -22,6 +22,7 @@ import { TimeMachine } from '@/components/TimeMachine';
 import { LegalDisclaimer } from '@/components/LegalDisclaimer';
 import { NexusCommandPalette } from '@/components/NexusCommandPalette';
 import { HitVault } from '@/components/HitVault';
+import { PipelineBus } from '@/components/PipelineBus';
 import { Button } from '@/components/ui/button';
 import { Clock, Binary } from 'lucide-react';
 
@@ -125,6 +126,7 @@ const Index = () => {
         </footer>
 
         <NexusCommandPalette onSwitchView={setActiveView} />
+        <PipelineBus />
       </div>
     </div>
   );
