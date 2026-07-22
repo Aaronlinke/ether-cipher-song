@@ -3,6 +3,7 @@ import { CryptoPanel } from './CryptoPanel';
 import { Calculator, Clock, Cpu, Zap, Play, Square, Target, Trophy, Activity } from 'lucide-react';
 import { privateKeyToAddress, bytesToHex, generateRandomBytes } from '@/lib/crypto-utils';
 import { toast } from 'sonner';
+import { saveHit } from '@/lib/hit-vault';
 
 // AKTUELL UNGELÖSTE Bitcoin-Puzzle-Adressen (Stand 2026)
 // Alle Puzzles bis einschließlich #71 sind gelöst (#71 fiel im April 2024).
@@ -258,6 +259,16 @@ export function BruteForceCalculator() {
             setHunting(false);
             setFound({ key: k, addr });
             toast.success(`🎯 TREFFER von ${bot}! ${addr}`, { duration: 60000 });
+            saveHit({
+              source: 'brute-force-swarm',
+              bot,
+              bits,
+              puzzle: PUZZLE_TARGETS[bits] === addr ? bits : null,
+              private_key: k,
+              address: addr,
+              target_address: PUZZLE_TARGETS[bits] ?? customTarget.trim() || null,
+              note: `7-Bot-Swarm Treffer bei ${triesRef.current.toLocaleString()} Versuchen`,
+            }).catch((e) => toast.error('Vault-Sync fehlgeschlagen: ' + e.message));
             return;
           }
         } catch (e) {
