@@ -278,6 +278,14 @@ export function UniversalCalculator() {
     try {
       const r = await detectAndCompute(input);
       setResult(r);
+      // Broadcast the detected result kind to the pipeline bus
+      const first = r.lines?.find(l => l.value)?.value ?? input;
+      const kind = r.kind.includes('address') ? 'address'
+        : r.kind.includes('key') || r.kind.includes('wif') ? 'key'
+        : r.kind.includes('hex') ? 'hex'
+        : r.kind.includes('mnemonic') ? 'mnemonic'
+        : 'text';
+      emit({ kind: kind as any, value: String(first), source: `Universal:${r.kind}`, target: 'any' });
     } catch (e) {
       setError(String(e));
     } finally {
