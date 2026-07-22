@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { emit, usePipelineTarget } from '@/lib/pipeline-bus';
 import { Sparkles, Loader2, Send, Brain, Wallet } from 'lucide-react';
 import { evaluate } from 'mathjs';
 import { Button } from '@/components/ui/button';
@@ -239,6 +240,11 @@ export function UniversalCalculator() {
   const [error, setError] = useState('');
   const [balance, setBalance] = useState<null | { sat: number; txs: number; lastSeen?: string }>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
+
+  // Pipeline: receive payloads addressed to `universal`
+  usePipelineTarget('universal', (p) => {
+    setInput(p.value);
+  });
   const abortRef = useRef<AbortController | null>(null);
 
   // Auto-fetch balance when the detected kind is an address
