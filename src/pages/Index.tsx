@@ -126,6 +126,7 @@ const Index = () => {
         </footer>
 
         <NexusCommandPalette onSwitchView={setActiveView} />
+        <PipelineBus />
       </div>
     </div>
   );
