@@ -26,9 +26,11 @@ interface ResultLine {
 
 const HEX_RE = /^[0-9a-fA-F]+$/;
 
-// Aktuell OFFENE Bitcoin-Puzzle (Puzzles #1–#71 sind bereits gelöst, #71 fiel im April 2024).
-// Wenn unser System einen Private Key für eine dieser Adressen findet → JACKPOT.
+// AKTUELL OFFENE Bitcoin-Puzzle (Stand 2026). 
+// Puzzles #1–#70 sind gelöst; #68 fiel zuletzt am 7. April.
+// Ab #71 sind die Adressen noch ungelöst — aktuelles Schwarm-Ziel.
 const OPEN_PUZZLE_ADDRESSES: Record<string, number> = {
+  '1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU': 71,
   '1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR': 72,
   '12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4': 73,
   '1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv': 74,
@@ -59,7 +61,7 @@ async function detectAndCompute(raw: string): Promise<{ kind: string; lines: Res
           { label: 'Min (hex)', value: '0x' + min.toString(16), mono: true },
           { label: 'Max (hex)', value: '0x' + max.toString(16), mono: true },
           { label: 'Suchraum', value: span.toString() },
-          { label: 'Status', value: n <= 71 ? 'Bereits gelöst (zuletzt #71, April 2024)' : 'OFFEN — Ziel des Schwarms (ab #72)' },
+          { label: 'Status', value: n <= 70 ? 'Bereits gelöst (zuletzt #68, April 2025)' : 'OFFEN — Ziel des Schwarms (ab #71)' },
         ],
       };
     }

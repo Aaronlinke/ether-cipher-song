@@ -60,12 +60,13 @@ interface SwarmMetrics {
 
 // ==================== BITCOIN PUZZLE TARGETS ====================
 
-// Aktuell OFFENE Bitcoin-Puzzles (Stand 2026): #72 und höher.
-// Puzzles #1–#71 sind bereits gelöst (#71 zuletzt im April 2024).
+// Aktuell OFFENE Bitcoin-Puzzles (Stand 2026): #71 und höher.
+// Puzzles #1–#70 sind gelöst; #68 war das letzte bekannte Opfer.
 function puzzleRange(bits: number): { min: bigint; max: bigint } {
   return { min: 1n << BigInt(bits - 1), max: (1n << BigInt(bits)) - 1n };
 }
 const OPEN_PUZZLE_LIST: { bits: number; address: string }[] = [
+  { bits: 71, address: '1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU' },
   { bits: 72, address: '1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR' },
   { bits: 73, address: '12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4' },
   { bits: 74, address: '1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv' },
