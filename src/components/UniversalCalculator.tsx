@@ -26,21 +26,8 @@ interface ResultLine {
 
 const HEX_RE = /^[0-9a-fA-F]+$/;
 
-// AKTUELL OFFENE Bitcoin-Puzzle (Stand 2026). 
-// Puzzles #1–#70 sind gelöst; #68 fiel zuletzt am 7. April.
-// Ab #71 sind die Adressen noch ungelöst — aktuelles Schwarm-Ziel.
-const OPEN_PUZZLE_ADDRESSES: Record<string, number> = {
-  '1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU': 71,
-  '1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR': 72,
-  '12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4': 73,
-  '1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv': 74,
-  '1J36UjUByGroXcCvmj13U6uwaVv9caEeAt': 75,
-  '1DJh2eHFYQfACPmrvpyWc8MSTYKh7w9eRF': 76,
-  '1Bxk4CQdqL9p22JEtDfdXMsng1XacifUtE': 77,
-  '15qF6X51huDjqTmF9BJgxXdt1xcj46Jmhb': 78,
-  '1ARk8HWJMn8js8tQmGUJeQHjSE7KRkn2t8': 79,
-  '1BCf6rHUW6m3iH2ptsvnjgLruAiPQQepLe': 80,
-};
+// Zentrale, verifizierte Puzzle-Datenbank (src/lib/puzzles.ts)
+const OPEN_PUZZLE_ADDRESSES = OPEN_PUZZLE_BY_ADDRESS;
 
 async function detectAndCompute(raw: string): Promise<{ kind: string; lines: ResultLine[] } | null> {
   const input = raw.trim();
@@ -61,7 +48,14 @@ async function detectAndCompute(raw: string): Promise<{ kind: string; lines: Res
           { label: 'Min (hex)', value: '0x' + min.toString(16), mono: true },
           { label: 'Max (hex)', value: '0x' + max.toString(16), mono: true },
           { label: 'Suchraum', value: span.toString() },
-          { label: 'Status', value: n <= 70 ? 'Bereits gelöst (zuletzt #68, April 2025)' : 'OFFEN — Ziel des Schwarms (ab #71)' },
+          { label: 'Status', value: puzzleStatusLabel(n) },
+          ...(OPEN_PUZZLE_ADDRESS[n]
+            ? [
+                { label: 'Ziel-Adresse', value: OPEN_PUZZLE_ADDRESS[n], mono: true },
+                { label: 'Preisgeld', value: `${puzzleReward(n).toFixed(1)} BTC` },
+                { label: 'Public Key bekannt', value: hasPublicKey(n) ? 'Ja (Vielfaches von 5 — Kangaroo möglich)' : 'Nein (nur Hash160)' },
+              ]
+            : []),
         ],
       };
     }
