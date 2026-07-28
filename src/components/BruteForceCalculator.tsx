@@ -368,6 +368,13 @@ export function BruteForceCalculator() {
               </button>
             ))}
           </div>
+          <div className="text-[10px] font-mono mb-2">
+            {isSolved(bits) ? (
+              <span className="text-crypto-red">⚠ Puzzle #{bits} ist bereits gelöst — kein Preisgeld mehr.</span>
+            ) : (
+              <span className="text-crypto-gold">{puzzleStatusLabel(bits)}</span>
+            )}
+          </div>
           <input
             type="range"
             min="1"
