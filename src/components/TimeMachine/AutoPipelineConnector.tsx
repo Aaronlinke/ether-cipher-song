@@ -7,14 +7,17 @@ import { Slider } from '@/components/ui/slider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { GitBranch, Play, Square, Zap, Database, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { topOpenPuzzles, puzzleRange, FIRST_OPEN_PUZZLE } from '@/lib/puzzles';
 
 const SECP256K1_N = BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141');
 
-const PUZZLE_RANGES: Record<number, { min: bigint; max: bigint; address: string }> = {
-  66: { min: BigInt('0x20000000000000000'), max: BigInt('0x3ffffffffffffffff'), address: '13zb1hQbWVsc2S7ZTZnP2G4undNNpdh5so' },
-  67: { min: BigInt('0x40000000000000000'), max: BigInt('0x7ffffffffffffffff'), address: '1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9' },
-  68: { min: BigInt('0x80000000000000000'), max: BigInt('0xfffffffffffffffff'), address: '1MVDYgVaSN6iKKEsbzRUAYFrYJadLYZvvZ' },
-};
+// Nur noch OFFENE Puzzles (zentrale Datenbank src/lib/puzzles.ts)
+const PUZZLE_RANGES: Record<number, { min: bigint; max: bigint; address: string }> = Object.fromEntries(
+  topOpenPuzzles(10).map((p) => {
+    const { min, max } = puzzleRange(p.n);
+    return [p.n, { min, max, address: p.address }];
+  }),
+);
 
 interface PipelineCandidate {
   hex: string;
@@ -25,7 +28,7 @@ interface PipelineCandidate {
 }
 
 export function AutoPipelineConnector() {
-  const [puzzleNum, setPuzzleNum] = useState(66);
+  const [puzzleNum, setPuzzleNum] = useState(FIRST_OPEN_PUZZLE);
   const [batchSize, setBatchSize] = useState(500);
   const [running, setRunning] = useState(false);
   const [candidates, setCandidates] = useState<PipelineCandidate[]>([]);
