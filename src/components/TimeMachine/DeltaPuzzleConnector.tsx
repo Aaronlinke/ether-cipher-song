@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { topOpenPuzzles, hasPublicKey } from '@/lib/puzzles';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -24,17 +25,13 @@ const SECP256K1 = {
   Gy: BigInt('0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8'),
 };
 
-const PUZZLES = [
-  { id: 66, bits: 66, address: '13zb1hQbWVsc2S7ZTZnP2G4undNNpdh5so', hasPublicKey: true },
-  { id: 67, bits: 67, address: '1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9', hasPublicKey: true },
-  { id: 68, bits: 68, address: '1MVDYgVaSN6iKKEsbzRUAYFrYJadLYZvvZ', hasPublicKey: true },
-  { id: 69, bits: 69, address: '19vkiEajfhuZ8bs8Zu2jgmC6oqZbWqhxhG', hasPublicKey: true },
-  { id: 72, bits: 72, address: '1LHtnpd8nU5VHEMkG2TMYYNUaLL6eLHZR1', hasPublicKey: true },
-  { id: 73, bits: 73, address: '1AX7bP85C6VEgKJQifdJJZZV2NYBj7ToLQ', hasPublicKey: false },
-  { id: 74, bits: 74, address: '1BfBfQPxUbJeXv9WY2FHy5ZbR9mMJdT8Ai', hasPublicKey: false },
-  { id: 76, bits: 76, address: '1P52VadqTe6Yy8HM9G5B3D5wJx3F7k8zqq', hasPublicKey: false },
-  { id: 80, bits: 80, address: '1K2K9gQ7D2aE5XA7xUVp9qWpmEBzqKaRFG', hasPublicKey: true },
-];
+// Verifizierte, noch offene Puzzles aus der zentralen Datenbank.
+const PUZZLES = topOpenPuzzles(12).map((p) => ({
+  id: p.n,
+  bits: p.n,
+  address: p.address,
+  hasPublicKey: hasPublicKey(p.n),
+}));
 
 // Constraint-Engine (aus Delta-Solver Logik repliziert)
 interface ConnectorConstraint {
