@@ -61,7 +61,7 @@ async function detectAndCompute(raw: string): Promise<{ kind: string; lines: Res
           { label: 'Min (hex)', value: '0x' + min.toString(16), mono: true },
           { label: 'Max (hex)', value: '0x' + max.toString(16), mono: true },
           { label: 'Suchraum', value: span.toString() },
-          { label: 'Status', value: n <= 70 ? 'Bereits gelöst (zuletzt #68)' : 'OFFEN — Ziel des Schwarms (ab #71)' },
+          { label: 'Status', value: n <= 70 ? 'Bereits gelöst (zuletzt #68, April 2025)' : 'OFFEN — Ziel des Schwarms (ab #71)' },
         ],
       };
     }
