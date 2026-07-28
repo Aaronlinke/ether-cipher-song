@@ -112,7 +112,7 @@ export function CryptoChallenges() {
         <p className="text-xs text-muted-foreground">
           Kuratierte Liste mathematischer und kryptografischer Probleme, an denen unsere Engine (SRIL, Δ-Solver,
           SwarmKeyHunter, Masterformel, UTAS) arbeiten kann. Bitcoin Puzzle <span className="text-crypto-gold">#71</span> ist
-          gefallen — aktuelles Ziel: <span className="text-crypto-orange">#72</span>.
+          aktuell das nächste Ziel — <span className="text-crypto-orange">#68</span> war das letzte gelöste.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {CHALLENGES.map((c, i) => (
