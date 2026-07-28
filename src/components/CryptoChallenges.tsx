@@ -12,11 +12,11 @@ interface Challenge {
 
 const CHALLENGES: Challenge[] = [
   {
-    name: 'Bitcoin Puzzle #72 → #160',
+    name: 'Bitcoin Puzzle #71 → #160',
     category: 'bitcoin', status: 'offen',
     prize: '≈ 990 BTC kumuliert',
-    description: 'Private Keys verteilt über aufsteigende Bit-Bereiche. Aktuell offen ab #72 (≈ 0.72 BTC) bis #160. Public Keys nur für durch 5 teilbare Indizes bekannt.',
-    url: 'https://privatekeys.pw/puzzles/bitcoin-puzzle-tx',
+    description: 'Private Keys verteilt über aufsteigende Bit-Bereiche. Aktuell offen ab #71 (≈ 7.1 BTC) bis #160. #71 ist das aktive Schwarm-Ziel.',
+    url: 'https://btcpuzzle.info/puzzle/71',
   },
   {
     name: 'RSA Factoring Challenge (RSA-2048)',
