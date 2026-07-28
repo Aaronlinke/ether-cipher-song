@@ -6,34 +6,16 @@ import { toast } from 'sonner';
 import { saveHit } from '@/lib/hit-vault';
 import { emit, usePipelineTarget } from '@/lib/pipeline-bus';
 
-// AKTUELL UNGELÖSTE Bitcoin-Puzzle-Adressen (Stand 2026)
-// Puzzles #1–#70 sind gelöst; #68 fiel zuletzt (April 2025).
-// Ab #71 jagen wir die noch offenen Adressen.
-const PUZZLE_TARGETS: Record<number, string> = {
-  71: '1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU',
-  72: '1JTK7s9YVYywfm5XUH7RNhHJH1LshCaRFR',
-  73: '12VVRNPi4SJqUTsp6FmqDqY5sGosDtysn4',
-  74: '1FWGcVDK3JGzCC3WtkYetULPszMaK2Jksv',
-  75: '1J36UjUByGroXcCvmj13U6uwaVv9caEeAt',
-  76: '1DJh2eHFYQfACPmrvpyWc8MSTYKh7w9eRF',
-  77: '1Bxk4CQdqL9p22JEtDfdXMsng1XacifUtE',
-  78: '15qF6X51huDjqTmF9BJgxXdt1xcj46Jmhb',
-  79: '1ARk8HWJMn8js8tQmGUJeQHjSE7KRkn2t8',
-  80: '1BCf6rHUW6m3iH2ptsvnjgLruAiPQQepLe',
-};
+// Puzzle-Ziele kommen zentral aus der verifizierten Datenbank (src/lib/puzzles.ts).
+const PUZZLE_TARGETS: Record<number, string> = OPEN_PUZZLE_ADDRESS;
 
-const presets = [
-  { bits: 71, name: 'Puzzle #71 ⚡', color: 'crypto-gold' },
-  { bits: 72, name: 'Puzzle #72 ⚡', color: 'crypto-orange' },
-  { bits: 73, name: 'Puzzle #73', color: 'crypto-orange' },
-  { bits: 74, name: 'Puzzle #74', color: 'crypto-purple' },
-  { bits: 75, name: 'Puzzle #75', color: 'crypto-purple' },
-  { bits: 76, name: 'Puzzle #76', color: 'crypto-purple' },
-  { bits: 77, name: 'Puzzle #77', color: 'crypto-red' },
-  { bits: 78, name: 'Puzzle #78', color: 'crypto-red' },
-  { bits: 79, name: 'Puzzle #79', color: 'crypto-red' },
-  { bits: 80, name: 'Puzzle #80', color: 'crypto-red' },
-];
+const presetColors = ['crypto-gold', 'crypto-orange', 'crypto-orange', 'crypto-purple', 'crypto-purple', 'crypto-purple', 'crypto-red', 'crypto-red', 'crypto-red', 'crypto-red'];
+const presets = topOpenPuzzles(10).map((p, i) => ({
+  bits: p.n,
+  name: `Puzzle #${p.n}${i < 2 ? ' ⚡' : ''}`,
+  reward: p.reward,
+  color: presetColors[i] ?? 'crypto-red',
+}));
 
 const hardwarePresets = [
   { name: 'RTX 4090', keysPerSec: 2_500_000_000 },
