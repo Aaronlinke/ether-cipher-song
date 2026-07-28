@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { topOpenPuzzles, puzzleReward, hasPublicKey } from '@/lib/puzzles';
 
 // ============================================================================
 // SECP256K1 KONSTANTEN - Bitcoin Elliptische Kurve
@@ -24,20 +25,14 @@ const SECP256K1 = {
 // ============================================================================
 // BITCOIN PUZZLE DATEN - Die echten Puzzles von 1BTC bis 1000BTC
 // ============================================================================
-const PUZZLES = [
-  { id: 66, bits: 66, address: '13zb1hQbWVsc2S7ZTZnP2G4undNNpdh5so', balance: '6.6 BTC', hint: 'Bits 1-66' },
-  { id: 67, bits: 67, address: '1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9', balance: '6.7 BTC', hint: 'Bits 1-67' },
-  { id: 68, bits: 68, address: '1MVDYgVaSN6iKKEsbzRUAYFrYJadLYZvvZ', balance: '6.8 BTC', hint: 'Bits 1-68' },
-  { id: 69, bits: 69, address: '19vkiEajfhuZ8bs8Zu2jgmC6oqZbWqhxhG', balance: '6.9 BTC', hint: 'Bits 1-69' },
-  { id: 72, bits: 72, address: '1LHtnpd8nU5VHEMkG2TMYYNUaLL6eLHZR1', balance: '7.2 BTC', hint: 'Bits 1-72' },
-  { id: 73, bits: 73, address: '1AX7bP85C6VEgKJQifdJJZZV2NYBj7ToLQ', balance: '7.3 BTC', hint: 'Bits 1-73 - KEIN PUBLIC KEY!' },
-  { id: 74, bits: 74, address: '1BfBfQPxUbJeXv9WY2FHy5ZbR9mMJdT8Ai', balance: '7.4 BTC', hint: 'Bits 1-74 - KEIN PUBLIC KEY!' },
-  { id: 75, bits: 75, address: '1Jy6ULj5c5Sx2rS1RpP8iCJ6L3Km9Uijid', balance: '7.5 BTC', hint: 'Bits 1-75' },
-  { id: 76, bits: 76, address: '1P52VadqTe6Yy8HM9G5B3D5wJx3F7k8zqq', balance: '7.6 BTC', hint: 'Bits 1-76 - KEIN PUBLIC KEY!' },
-  { id: 80, bits: 80, address: '1K2K9gQ7D2aE5XA7xUVp9qWpmEBzqKaRFG', balance: '8.0 BTC', hint: 'Bits 1-80' },
-  { id: 88, bits: 88, address: '14oFNXucftsHiUMY8uctg6N487riuyXs4h', balance: '8.8 BTC', hint: 'Bits 1-88' },
-  { id: 130, bits: 130, address: '1Fo65aKq8s8iquMt6weF1rku1moWVEd5Ua', balance: '13 BTC', hint: 'Bits 1-130' },
-];
+// Verifizierte, noch OFFENE Puzzles (zentrale Datenbank src/lib/puzzles.ts)
+const PUZZLES = topOpenPuzzles(14).map((p) => ({
+  id: p.n,
+  bits: p.n,
+  address: p.address,
+  balance: `${puzzleReward(p.n).toFixed(1)} BTC`,
+  hint: `Bereich 2^${p.n - 1} … 2^${p.n} − 1${hasPublicKey(p.n) ? ' — Public Key bekannt' : ' — KEIN PUBLIC KEY'}`,
+}));
 
 // ============================================================================
 // PROJECT OMEGA - HISTORISCHE SEED DATENBANK
