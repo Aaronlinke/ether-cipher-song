@@ -371,7 +371,7 @@ export function UniversalCalculator() {
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="z.B.  sin(pi/4)^2 + cos(pi/4)^2   ·   0xdeadbeef   ·   1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa   ·   puzzle 72   ·   Was ist die Lyapunov-Exponent des Lorenz-Systems?"
+          placeholder="z.B.  sin(pi/4)^2 + cos(pi/4)^2   ·   0xdeadbeef   ·   1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa   ·   puzzle 71   ·   Was ist die Lyapunov-Exponent des Lorenz-Systems?"
           rows={4}
           className="font-mono text-sm bg-background/50 border-crypto-gold/30 focus:border-crypto-gold/60"
           onKeyDown={(e) => {

@@ -47,7 +47,7 @@ export function NexusCommandPalette({
     { id: 'manifest', label: 'Manifestation-Engine', hint: 'Void · Chaos · Spin', icon: Zap, group: 'Rechner', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="manifest"]'), 100); } },
 
     { id: 'solo', label: 'Solo-Miner', hint: 'Echtes SHA-256d auf Bitcoin-Tip', icon: Pickaxe, group: 'Mining & Hunt', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="solo"]'), 100); } },
-    { id: 'brute', label: 'Brute-Force / 7-Bot-Swarm', hint: 'Puzzle #72+', icon: Radar, group: 'Mining & Hunt', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="brute"]'), 100); } },
+    { id: 'brute', label: 'Brute-Force / 7-Bot-Swarm', hint: 'Puzzle #71+', icon: Radar, group: 'Mining & Hunt', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="brute"]'), 100); } },
     { id: 'chall', label: 'Crypto-Challenges', hint: 'RSA, Riemann, P=NP', icon: Search, group: 'Mining & Hunt', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="chall"]'), 100); } },
 
     { id: 'zip', label: 'Zip-Runner', hint: 'Sandbox + Auto-Fix', icon: Archive, group: 'Tools', action: () => { onSwitchView('crypto'); setTimeout(scrollTo('[data-mod="zip"]'), 100); } },
