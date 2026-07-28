@@ -5,6 +5,7 @@ import { privateKeyToAddress, bytesToHex, generateRandomBytes } from '@/lib/cryp
 import { toast } from 'sonner';
 import { saveHit } from '@/lib/hit-vault';
 import { emit, usePipelineTarget } from '@/lib/pipeline-bus';
+import { OPEN_PUZZLE_ADDRESS, topOpenPuzzles, puzzleStatusLabel, isSolved } from '@/lib/puzzles';
 
 // Puzzle-Ziele kommen zentral aus der verifizierten Datenbank (src/lib/puzzles.ts).
 const PUZZLE_TARGETS: Record<number, string> = OPEN_PUZZLE_ADDRESS;
