@@ -1,5 +1,6 @@
 import { Trophy, ExternalLink } from 'lucide-react';
 import { CryptoPanel } from './CryptoPanel';
+import { FIRST_OPEN_PUZZLE } from '@/lib/puzzles';
 
 interface Challenge {
   name: string;
@@ -15,7 +16,7 @@ const CHALLENGES: Challenge[] = [
     name: 'Bitcoin Puzzle #71 → #160',
     category: 'bitcoin', status: 'offen',
     prize: '≈ 990 BTC kumuliert',
-    description: 'Private Keys verteilt über aufsteigende Bit-Bereiche. Aktuell offen ab #71 (≈ 7.1 BTC) bis #160. #71 ist das aktive Schwarm-Ziel.',
+    description: 'Private Keys verteilt über aufsteigende Bit-Bereiche. Gelöst: #1–#70 sowie #75/#80/#85/…/#130. Offen: #71–#74, #76–#79, #81–#84 … bis #160. Aktives Ziel: #71 (7.1 BTC).',
     url: 'https://btcpuzzle.info/puzzle/71',
   },
   {
@@ -111,8 +112,10 @@ export function CryptoChallenges() {
       <div className="space-y-3">
         <p className="text-xs text-muted-foreground">
           Kuratierte Liste mathematischer und kryptografischer Probleme, an denen unsere Engine (SRIL, Δ-Solver,
-          SwarmKeyHunter, Masterformel, UTAS) arbeiten kann. Bitcoin Puzzle <span className="text-crypto-gold">#71</span> ist
-          aktuell das nächste Ziel — <span className="text-crypto-orange">#68</span> war das letzte gelöste.
+          SwarmKeyHunter, Masterformel, UTAS) arbeiten kann. Erstes noch offenes Bitcoin Puzzle:{' '}
+          <span className="text-crypto-gold">#{FIRST_OPEN_PUZZLE}</span> (7.1 BTC). Gelöst sind #1–#70 sowie die
+          Fünferschritte #75 bis #130 — alle übrigen ab #71 sind{' '}
+          <span className="text-crypto-orange">offen</span>.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {CHALLENGES.map((c, i) => (
