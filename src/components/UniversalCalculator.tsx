@@ -6,6 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { CryptoPanel } from './CryptoPanel';
 import {
+  OPEN_PUZZLE_BY_ADDRESS,
+  OPEN_PUZZLE_ADDRESS,
+  puzzleStatusLabel,
+  puzzleReward,
+  hasPublicKey,
+} from '@/lib/puzzles';
+import {
   sha256,
   ripemd160,
   hash160,
