@@ -7,9 +7,10 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const POOLS: Record<string, { host: string; port: number }> = {
+  'solo.ckpool.org:443': { host: 'solo.ckpool.org', port: 443 },
+  'eusolo.ckpool.org:443': { host: 'eusolo.ckpool.org', port: 443 },
   'solo.ckpool.org': { host: 'solo.ckpool.org', port: 3333 },
   'eusolo.ckpool.org': { host: 'eusolo.ckpool.org', port: 3333 },
-  'solo.ckpool.org:443': { host: 'solo.ckpool.org', port: 443 },
 };
 
 interface Job {
@@ -36,6 +37,8 @@ interface Session {
   nextId: number;
   lastUsed: number;
   closed: boolean;
+  /** Genau EIN offener read()-Aufruf pro Session — sonst wirft der Reader / läuft der Speicher voll. */
+  pendingRead: Promise<ReadableStreamReadResult<Uint8Array>> | null;
 }
 
 // Session-Cache pro Function-Instanz. Läuft die Instanz aus, muss der
@@ -93,17 +96,22 @@ async function readUntil(
       nl = s.buffer.indexOf('\n');
     }
 
+    // Nur EINEN read() gleichzeitig offen halten und nur darauf warten.
+    if (!s.pendingRead) s.pendingRead = s.reader.read();
+    const current = s.pendingRead;
+    let timer: number | undefined;
     const chunk = await Promise.race([
-      s.reader.read(),
-      new Promise<{ done: true; value: undefined }>((r) =>
-        setTimeout(() => r({ done: true, value: undefined }), Math.max(deadline - Date.now(), 1)),
-      ),
+      current,
+      new Promise<'timeout'>((r) => {
+        timer = setTimeout(() => r('timeout'), Math.max(deadline - Date.now(), 1)) as unknown as number;
+      }),
     ]);
-    if (!chunk || chunk.done || !chunk.value) {
-      if (Date.now() >= deadline) return null;
-      continue;
-    }
-    s.buffer += decoder.decode(chunk.value, { stream: true });
+    if (timer !== undefined) clearTimeout(timer);
+
+    if (chunk === 'timeout') return null;      // read() bleibt offen, wird beim nächsten Aufruf weiterverwendet
+    s.pendingRead = null;
+    if (chunk.done) { s.closed = true; return null; }
+    if (chunk.value) s.buffer += decoder.decode(chunk.value, { stream: true });
   }
   return null;
 }
@@ -123,6 +131,7 @@ async function openSession(poolKey: string, worker: string): Promise<Session> {
     nextId: 1,
     lastUsed: Date.now(),
     closed: false,
+    pendingRead: null,
   };
 
   const subId = await send(s, 'mining.subscribe', ['project-omega/1.0']);
@@ -177,7 +186,7 @@ Deno.serve(async (req) => {
         return json({ error: 'Ungültige Bitcoin-Payout-Adresse.' }, 400);
       }
       const worker = body.workerName ? `${address}.${String(body.workerName).slice(0, 32)}` : address;
-      const s = await openSession(String(body.pool ?? 'solo.ckpool.org'), worker);
+      const s = await openSession(String(body.pool ?? 'solo.ckpool.org:443'), worker);
       const id = crypto.randomUUID();
       sessions.set(id, s);
       return json({ ok: true, ...jobPayload(id, s) });
