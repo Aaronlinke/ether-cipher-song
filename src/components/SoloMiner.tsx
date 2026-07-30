@@ -8,7 +8,7 @@ import {
   buildCoinbase, buildHeaderHex, difficultyToTarget, merkleRoot,
   nbitsToTarget, randomExtranonce2, type StratumJob,
 } from '@/lib/stratum';
-import { addHit } from '@/lib/hit-vault';
+import { saveHit } from '@/lib/hit-vault';
 
 // ─────────────────────────────────────────────────────────────
 // Stratum-Worker: sweept Nonces gegen ein echtes Share-Target
@@ -282,7 +282,7 @@ export function SoloMiner() {
         pushLog('✅ Pool: ACCEPTED');
         if (isBlock) {
           toast.success('🏆 BLOCK GEFUNDEN UND AKZEPTIERT!');
-          addHit({
+          saveHit({
             source: 'SoloMiner', address: payout.trim(), private_key: '—',
             note: `Block-Kandidat akzeptiert · job ${j.job_id} · nonce ${n.toString(16)} · ${hash}`,
           }).catch(() => {});
