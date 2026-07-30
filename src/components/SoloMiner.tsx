@@ -136,7 +136,7 @@ export function SoloMiner() {
 
   // ---- Stratum-Bridge State ----
   const [mode, setMode] = useState<'lottery' | 'stratum'>('lottery');
-  const [pool, setPool] = useState('solo.ckpool.org');
+  const [pool, setPool] = useState('solo.ckpool.org:443');
   const [session, setSession] = useState<string | null>(null);
   const [job, setJob] = useState<StratumJob | null>(null);
   const [difficulty, setDifficulty] = useState(1);
@@ -395,9 +395,10 @@ export function SoloMiner() {
                 disabled={running}
                 className="bg-background/40 border border-crypto-green/30 rounded px-2 py-1.5 text-xs font-mono text-crypto-green"
               >
+                <option value="solo.ckpool.org:443">solo.ckpool.org:443</option>
+                <option value="eusolo.ckpool.org:443">eusolo.ckpool.org:443</option>
                 <option value="solo.ckpool.org">solo.ckpool.org:3333</option>
                 <option value="eusolo.ckpool.org">eusolo.ckpool.org:3333</option>
-                <option value="solo.ckpool.org:443">solo.ckpool.org:443</option>
               </select>
               {!running ? (
                 <Button
