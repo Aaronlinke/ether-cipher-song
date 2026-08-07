@@ -305,12 +305,13 @@ export function calculateCosmologyBackward(
         density = 9.47e-27 * Math.pow(1 + z, 4);
         break;
         
-      case 'Persoenlich':
+      case 'Persoenlich': {
         const chaos = personalSignature?.chaosConstant || 0.5;
         const fractalDim = personalSignature?.fractalDimension || 2.5;
         hubble = H0 * Math.pow(1 + z, 1.5 * fractalDim / 2.5) * (1 + 0.1 * Math.sin(chaos * z));
         density = 9.47e-27 * Math.pow(1 + z, 3) * (1 + chaos * 0.1);
         break;
+      }
         
       default:
         hubble = H0;
