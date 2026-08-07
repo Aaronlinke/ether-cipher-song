@@ -29,7 +29,7 @@ export function WifConverter() {
       const versionByte = network === 'mainnet' ? 0x80 : 0xef;
       
       // Step 1: Add version byte
-      let extended: number[] = [versionByte, ...Array.from(privKeyBytes)];
+      const extended: number[] = [versionByte, ...Array.from(privKeyBytes)];
       const step1 = bytesToHex(new Uint8Array(extended));
       
       // Step 2: Add compression flag if compressed
