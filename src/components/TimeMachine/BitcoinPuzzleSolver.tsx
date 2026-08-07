@@ -447,7 +447,7 @@ function ripemd160(data: Uint8Array): Uint8Array {
     }
     
     let [a, b, c, d, e] = [h0, h1, h2, h3, h4];
-    let [aa, bb, cc, dd, ee] = [h0, h1, h2, h3, h4];
+    const [aa, bb, cc, dd, ee] = [h0, h1, h2, h3, h4];
     
     for (let j = 0; j < 80; j++) {
       let f: number, kk: number;

@@ -63,7 +63,7 @@ export function SHA256PaperComputer() {
     const bitLength = data.length * 8;
     
     // Pad to 448 bits mod 512
-    let padded = [...data, 0x80];
+    const padded = [...data, 0x80];
     while ((padded.length * 8) % 512 !== 448) {
       padded.push(0x00);
     }

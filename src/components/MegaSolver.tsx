@@ -93,7 +93,7 @@ async function runDebianMicroScan(input: string): Promise<ModuleResult> {
     const enc = new TextEncoder();
     const SECP_N = BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141');
     for (let pid = 1; pid <= 1024; pid++) {
-      let priv = await sha256(enc.encode(`debian:openssl:2006-2008:pid=${pid}`));
+      const priv = await sha256(enc.encode(`debian:openssl:2006-2008:pid=${pid}`));
       const v = BigInt('0x' + bytesToHex(priv));
       if (v === 0n || v >= SECP_N) continue;
       const addr = await privateKeyToAddress(bytesToHex(priv), true);

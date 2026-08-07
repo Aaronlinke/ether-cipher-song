@@ -303,7 +303,7 @@ class SwarmIntelligenceEngine {
         agent.velocity = this.calculateInitialVelocity('mutator', range);
         break;
         
-      case 'memory':
+      case 'memory': {
         // Memory agents recognize patterns
         const hexKey = agent.position.toString(16);
         const patterns = this.findPatterns(hexKey);
@@ -323,6 +323,7 @@ class SwarmIntelligenceEngine {
         
         agent.position += BigInt(Math.floor((Math.random() - 0.5) * Number(agent.velocity)));
         break;
+      }
     }
     
     // Ensure position stays in bounds
